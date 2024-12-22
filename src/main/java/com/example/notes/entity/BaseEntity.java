@@ -1,4 +1,4 @@
-package com.beetexting.notes.entity;
+package com.example.notes.entity;
 
 import java.time.ZonedDateTime;
 

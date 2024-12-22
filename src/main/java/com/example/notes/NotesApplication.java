@@ -1,6 +1,5 @@
-package com.beetexting.notes;
+package com.example.notes;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 

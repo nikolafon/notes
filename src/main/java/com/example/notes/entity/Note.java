@@ -1,4 +1,4 @@
-package com.beetexting.notes.entity;
+package com.example.notes.entity;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -6,9 +6,9 @@ import org.springframework.data.annotation.Id;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class User extends BaseEntity {
+public class Note extends BaseEntity {
     @Id
     private String id;
-    private String username;
-    private String password;
+    private String title;
+    private String content;
 }
