@@ -1,14 +1,9 @@
 package com.example.notes.repository;
 
 import com.example.notes.entity.User;
-import org.springframework.data.mongodb.core.MongoOperations;
-import org.springframework.data.mongodb.repository.query.MongoEntityInformation;
-import org.springframework.data.mongodb.repository.support.SimpleMongoRepository;
+import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
-@RepositoryRestResource(collectionResourceRel = "users", path = "api/users")
-public class UserRepository extends SimpleMongoRepository<User, String> {
-    public UserRepository(MongoEntityInformation<User, String> metadata, MongoOperations mongoOperations) {
-        super(metadata, mongoOperations);
-    }
+@RepositoryRestResource(collectionResourceRel = "users", path = "users")
+public interface UserRepository extends MongoRepository<User, String> {
 }
