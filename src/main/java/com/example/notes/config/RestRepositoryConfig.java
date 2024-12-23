@@ -1,5 +1,9 @@
 package com.example.notes.config;
 
+import com.example.notes.entity.BaseEntity;
+import com.example.notes.entity.Note;
+import com.example.notes.entity.Tenant;
+import com.example.notes.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
@@ -20,6 +24,9 @@ public class RestRepositoryConfig implements RepositoryRestConfigurer {
         config.setReturnBodyForPutAndPost(true);
         config.setReturnBodyOnCreate(true);
         config.setReturnBodyOnUpdate(true);
+        config.exposeIdsFor(User.class);
+        config.exposeIdsFor(Tenant.class);
+        config.exposeIdsFor(Note.class);
     }
 
     public void configureValidatingRepositoryEventListener(ValidatingRepositoryEventListener validatingListener) {

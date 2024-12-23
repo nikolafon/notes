@@ -6,7 +6,7 @@ import org.springframework.data.annotation.Id;
 import java.time.ZonedDateTime;
 
 @Data
-public class BaseEntity {
+public abstract class BaseEntity {
 
     @Id
     private String id;

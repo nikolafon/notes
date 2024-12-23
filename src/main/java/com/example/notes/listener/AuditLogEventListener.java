@@ -7,14 +7,16 @@ import org.springframework.data.rest.core.event.BeforeSaveEvent;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 @Component
-public class AuditEventListener {
+public class AuditLogEventListener {
+
     @EventListener
     public void handleBeforeCreate(BeforeCreateEvent event) {
         if (event.getSource() instanceof BaseEntity entity) {
-            entity.setCreatedOn(ZonedDateTime.now());
+            entity.setCreatedOn(ZonedDateTime.now(ZoneId.of("UTC")));
             if (SecurityContextHolder.getContext().getAuthentication() != null) {
                 entity.setCreatedBy(SecurityContextHolder.getContext().getAuthentication().getName());
             }
@@ -24,7 +26,7 @@ public class AuditEventListener {
     @EventListener
     public void handleBeforeSave(BeforeSaveEvent event) {
         if (event.getSource() instanceof BaseEntity entity) {
-            entity.setUpdatedOn(ZonedDateTime.now());
+            entity.setUpdatedOn(ZonedDateTime.now(ZoneId.of("UTC")));
             if (SecurityContextHolder.getContext().getAuthentication() != null) {
                 entity.setUpdatedBy(SecurityContextHolder.getContext().getAuthentication().getName());
             }
