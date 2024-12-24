@@ -5,13 +5,17 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.Encrypted;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.Set;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Document(collection = "#{@tenantCollectionNameResolver.getTenantCollectionName('users')}")
-public class User extends BaseEntity {
+public class User extends BaseEntity implements UserDetails {
     @NotEmpty
     @Size(max = 50)
     private String firstName;
@@ -23,9 +27,10 @@ public class User extends BaseEntity {
     private String email;
     @NotEmpty
     @Size(max = 20)
-    private String userName;
+    @Indexed(unique = true)
+    private String username;
     @NotEmpty
     @Size(max = 50)
-    @Encrypted
     private String password;
+    private Set<SimpleGrantedAuthority> authorities;
 }

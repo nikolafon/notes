@@ -16,20 +16,24 @@ public class AuditLogEventListener {
     @EventListener
     public void handleBeforeCreate(BeforeCreateEvent event) {
         if (event.getSource() instanceof BaseEntity entity) {
+            validateAuthentication();
             entity.setCreatedOn(ZonedDateTime.now(ZoneId.of("UTC")));
-            if (SecurityContextHolder.getContext().getAuthentication() != null) {
-                entity.setCreatedBy(SecurityContextHolder.getContext().getAuthentication().getName());
-            }
+            entity.setCreatedBy(SecurityContextHolder.getContext().getAuthentication().getName());
         }
     }
 
     @EventListener
     public void handleBeforeSave(BeforeSaveEvent event) {
         if (event.getSource() instanceof BaseEntity entity) {
+            validateAuthentication();
             entity.setUpdatedOn(ZonedDateTime.now(ZoneId.of("UTC")));
-            if (SecurityContextHolder.getContext().getAuthentication() != null) {
-                entity.setUpdatedBy(SecurityContextHolder.getContext().getAuthentication().getName());
-            }
+            entity.setUpdatedBy(SecurityContextHolder.getContext().getAuthentication().getName());
+        }
+    }
+
+    private void validateAuthentication() {
+        if (SecurityContextHolder.getContext().getAuthentication() == null) {
+            throw new IllegalStateException("Authentication is required");
         }
     }
 }

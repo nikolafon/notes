@@ -1,6 +1,5 @@
 package com.example.notes.config;
 
-import com.example.notes.entity.BaseEntity;
 import com.example.notes.entity.Note;
 import com.example.notes.entity.Tenant;
 import com.example.notes.entity.User;
