@@ -32,7 +32,7 @@ public class InitDb {
             user.setUsername("admin");
             user.setPassword(passwordEncoder.encode("admin"));
             user.setEmail("nikola.nikolic@outlook.com");
-            user.setAuthorities(Set.of(new SimpleGrantedAuthority("ROLE_ADMIN")));
+            user.setAuthorities(Set.of(new SimpleGrantedAuthority("admin"), new SimpleGrantedAuthority("user")));
             userRepository.save(user);
         }
     }
