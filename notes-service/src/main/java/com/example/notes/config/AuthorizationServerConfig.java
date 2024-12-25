@@ -1,5 +1,7 @@
 package com.example.notes.config;
 
+import com.example.notes.entity.User;
+import com.example.notes.repository.UserRepository;
 import com.example.notes.service.MongoDbUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -9,9 +11,17 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.core.oidc.OidcScopes;
+import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.oauth2.server.authorization.client.InMemoryRegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
@@ -35,6 +45,8 @@ public class AuthorizationServerConfig {
     @Autowired
     private MongoDbUserDetailsService userDetailsService;
     @Autowired
+    private UserRepository userRepository;
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Bean
@@ -42,8 +54,15 @@ public class AuthorizationServerConfig {
     public SecurityFilterChain loginSecurityFilterChain(HttpSecurity http)
             throws Exception {
         http
-                .securityMatcher("*")
+                .securityMatcher("/login/**","/logout/**","/login/oauth2/**","/default-ui.css","/oauth2/authorization/**")
                 .formLogin(Customizer.withDefaults())
+                .oauth2Login(oauth2Login ->
+                        oauth2Login
+                                .userInfoEndpoint(userInfoEndpoint ->
+                                        userInfoEndpoint
+                                                .userService(oauth2UserService())
+                                )
+                )
                 .cors(Customizer.withDefaults());
         return http.build();
     }
@@ -63,6 +82,33 @@ public class AuthorizationServerConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults());
         return http.build();
+    }
+
+    private OAuth2UserService<OAuth2UserRequest, OAuth2User> oauth2UserService() {
+        DefaultOAuth2UserService delegate = new DefaultOAuth2UserService();
+        return request -> {
+            OAuth2User oauth2User = delegate.loadUser(request);
+            UserDetails userDetails = null;
+            String username = oauth2User.getAttribute("login");
+            String email = oauth2User.getAttribute("email");
+            String name = oauth2User.getAttribute("name");
+            String firstName = name.split(" ")[0];
+            String lastName = name.split(" ")[1];
+            try {
+                userDetails = userDetailsService.loadUserByUsername(username);
+            } catch (UsernameNotFoundException e) {
+                User user = new User();
+                user.setUsername(username);
+                user.setEmail(email);
+                user.setFirstName(firstName);
+                user.setLastName(lastName);
+                user.setPassword(passwordEncoder.encode(UUID.randomUUID().toString()));
+                user.setAuthorities(Set.of(new SimpleGrantedAuthority("user")));
+                userRepository.save(user);
+                userDetails = user;
+            }
+            return new DefaultOAuth2User(userDetails.getAuthorities(), oauth2User.getAttributes(), "login");
+        };
     }
 
     @Bean
@@ -94,8 +140,8 @@ public class AuthorizationServerConfig {
                 .clientId("web-client")
                 .clientSecret(passwordEncoder.encode("secret"))
                 .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
-                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
                 .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
+                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
                 .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
                 .redirectUri("http://localhost:4200/login-callback")
                 .redirectUri("https://oauth.pstmn.io/v1/callback")
