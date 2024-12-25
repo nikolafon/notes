@@ -38,7 +38,7 @@ public class ResourceServerConfig {
                                     .requestMatchers(HttpMethod.POST, "/api/users/**").hasAuthority(ROLE_ADMIN)
                                     .requestMatchers(HttpMethod.PUT, "/api/users/**").hasAuthority(ROLE_ADMIN)
                                     .requestMatchers(HttpMethod.DELETE, "/api/users/**").hasAuthority(ROLE_ADMIN)
-                                    .requestMatchers(HttpMethod.GET, "/api/tenants/**").permitAll()
+                                    .requestMatchers(HttpMethod.GET, "/api/tenants/**").hasAuthority(ROLE_ADMIN)
                                     .requestMatchers(HttpMethod.POST, "/api/tenants/**").hasAuthority(ROLE_ADMIN)
                                     .requestMatchers(HttpMethod.PUT, "/api/tenants/**").hasAuthority(ROLE_ADMIN)
                                     .requestMatchers(HttpMethod.DELETE, "/api/tenants/**").hasAuthority(ROLE_ADMIN);
