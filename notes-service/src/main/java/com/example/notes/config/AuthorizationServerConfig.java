@@ -1,6 +1,7 @@
 package com.example.notes.config;
 
 import com.example.notes.entity.User;
+import com.example.notes.filter.TenantFilter;
 import com.example.notes.repository.UserRepository;
 import com.example.notes.service.MongoDbUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,7 @@ import org.springframework.security.oauth2.server.authorization.settings.ClientS
 import org.springframework.security.oauth2.server.authorization.token.JwtEncodingContext;
 import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenCustomizer;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -48,6 +50,8 @@ public class AuthorizationServerConfig {
     private UserRepository userRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private TenantFilter tenantFilter;
 
     @Bean
     @Order(1)
@@ -55,6 +59,7 @@ public class AuthorizationServerConfig {
             throws Exception {
         http
                 .securityMatcher("/login/**","/logout/**","/login/oauth2/**","/default-ui.css","/oauth2/authorization/**")
+                .addFilterBefore(tenantFilter, AbstractPreAuthenticatedProcessingFilter.class)
                 .formLogin(Customizer.withDefaults())
                 .oauth2Login(oauth2Login ->
                         oauth2Login

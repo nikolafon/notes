@@ -1,16 +1,16 @@
 package com.example.notes.filter;
 
 import com.example.notes.entity.Tenant;
+import com.example.notes.repository.TenantRepository;
 import com.example.notes.tenant.TenantHolder;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.MongoExpression;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
+import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -19,7 +19,7 @@ import java.io.IOException;
 public class TenantFilter implements Filter {
 
     @Autowired
-    private MongoTemplate mongoTemplate;
+    private TenantRepository tenantRepository;
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
@@ -27,7 +27,9 @@ public class TenantFilter implements Filter {
         HttpServletResponse response = (HttpServletResponse) servletResponse;
         String tenantId = request.getHeader("X-Tenant-Id");
         if (StringUtils.isNotBlank(tenantId)) {
-            Tenant tenant = mongoTemplate.findOne(Query.query(Criteria.expr(MongoExpression.create(String.format("{ tenantId: '%s' }", tenantId)))), Tenant.class);
+            Tenant tenantExample = new Tenant();
+            tenantExample.setTenantId(tenantId);
+            Tenant tenant = tenantRepository.findOne(Example.of(tenantExample)).orElseThrow(() -> new IllegalArgumentException("Tenant not found"));
             TenantHolder.setCurrentTenant(tenant);
             filterChain.doFilter(request, response);
         } else {
