@@ -1,4 +1,4 @@
-package com.example.notes.entity;
+package com.example.notes.resource;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -13,7 +13,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document(collection = "tenants")
 @NoArgsConstructor
 @AllArgsConstructor
-public class Tenant extends BaseEntity {
+public class Tenant extends BaseResource {
 
     @NotNull
     private String name;

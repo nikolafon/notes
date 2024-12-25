@@ -1,6 +1,6 @@
 package com.example.notes.repository;
 
-import com.example.notes.entity.Note;
+import com.example.notes.resource.Note;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 

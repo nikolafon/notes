@@ -1,6 +1,6 @@
 package com.example.notes.init;
 
-import com.example.notes.entity.User;
+import com.example.notes.resource.User;
 import com.example.notes.repository.UserRepository;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;

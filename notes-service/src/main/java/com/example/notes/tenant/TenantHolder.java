@@ -1,6 +1,6 @@
 package com.example.notes.tenant;
 
-import com.example.notes.entity.Tenant;
+import com.example.notes.resource.Tenant;
 
 public class TenantHolder {
 

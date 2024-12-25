@@ -1,8 +1,8 @@
 package com.example.notes.config;
 
-import com.example.notes.entity.Note;
-import com.example.notes.entity.Tenant;
-import com.example.notes.entity.User;
+import com.example.notes.resource.Note;
+import com.example.notes.resource.Tenant;
+import com.example.notes.resource.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;

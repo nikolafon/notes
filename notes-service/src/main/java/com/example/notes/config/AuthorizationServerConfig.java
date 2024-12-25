@@ -1,6 +1,6 @@
 package com.example.notes.config;
 
-import com.example.notes.entity.User;
+import com.example.notes.resource.User;
 import com.example.notes.filter.TenantFilter;
 import com.example.notes.repository.UserRepository;
 import com.example.notes.service.MongoDbUserDetailsService;

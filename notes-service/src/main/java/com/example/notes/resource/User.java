@@ -1,4 +1,4 @@
-package com.example.notes.entity;
+package com.example.notes.resource;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
@@ -15,7 +15,7 @@ import java.util.Set;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Document(collection = "#{@tenantCollectionNameResolver.getTenantCollectionName('users')}")
-public class User extends BaseEntity implements UserDetails {
+public class User extends BaseResource implements UserDetails {
     @NotEmpty
     @Size(max = 50)
     private String firstName;

@@ -1,4 +1,4 @@
-package com.example.notes.entity;
+package com.example.notes.resource;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
@@ -9,7 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Document(collection = "#{@tenantCollectionNameResolver.getTenantCollectionName('notes')}")
-public class Note extends BaseEntity {
+public class Note extends BaseResource {
     @NotEmpty
     @Size(max = 100)
     private String title;

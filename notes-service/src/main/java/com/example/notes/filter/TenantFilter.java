@@ -1,6 +1,6 @@
 package com.example.notes.filter;
 
-import com.example.notes.entity.Tenant;
+import com.example.notes.resource.Tenant;
 import com.example.notes.repository.TenantRepository;
 import com.example.notes.tenant.TenantHolder;
 import jakarta.servlet.*;
@@ -8,8 +8,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Component;
 

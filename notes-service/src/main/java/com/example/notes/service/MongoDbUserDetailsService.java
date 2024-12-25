@@ -1,6 +1,6 @@
 package com.example.notes.service;
 
-import com.example.notes.entity.User;
+import com.example.notes.resource.User;
 import com.example.notes.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
