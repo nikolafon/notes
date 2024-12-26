@@ -107,7 +107,7 @@ public class AuthorizationServerConfig {
             String name = oauth2User.getAttribute("name");
             String firstName = name.split(" ")[0];
             String lastName = name.split(" ")[1];
-            String tenant = (String) httpSession.getAttribute("tenant");
+            String tenant = (String) httpSession.getAttribute("tenantId");
             try {
                 if (tenant != null) {
                     TenantHolder.setCurrentTenantId(tenant);

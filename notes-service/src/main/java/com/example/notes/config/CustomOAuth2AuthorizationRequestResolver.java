@@ -27,7 +27,7 @@ public class CustomOAuth2AuthorizationRequestResolver implements OAuth2Authoriza
     public OAuth2AuthorizationRequest resolve(HttpServletRequest request) {
         OAuth2AuthorizationRequest req = defaultResolver.resolve(request);
         if (req != null) {
-            httpSession.setAttribute("tenant", request.getParameter("tenant"));
+            httpSession.setAttribute("tenantId", TenantHolder.getCurrentTenantId());
             req = OAuth2AuthorizationRequest.from(req)
                     .build();
         }
