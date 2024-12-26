@@ -9,7 +9,9 @@ public class TenantHolder {
     public static Tenant getCurrentTenant() {
         return currentTenant.get();
     }
-
+    public static boolean isCurrentTenantPresent() {
+        return currentTenant.get() != null;
+    }
     public static void setCurrentTenant(Tenant tenant) {
         currentTenant.set(tenant);
     }
