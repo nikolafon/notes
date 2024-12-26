@@ -1,15 +1,13 @@
 package com.example.notes.tenant;
 
-import com.example.notes.resource.Tenant;
 import org.springframework.stereotype.Component;
 
 @Component
 public class TenantCollectionNameResolver {
-
     public String getTenantCollectionName(String collectionName) {
-        Tenant tenant = TenantHolder.getCurrentTenant();
-        if (tenant != null) {
-            return tenant.getTenantId() + "_" + collectionName;
+        String tenantId = TenantHolder.getCurrentTenantId();
+        if (tenantId != null) {
+            return tenantId + "_" + collectionName;
         }
         return collectionName;
     }

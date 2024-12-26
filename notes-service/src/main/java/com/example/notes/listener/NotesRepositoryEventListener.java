@@ -4,7 +4,6 @@ import com.example.notes.repository.NoteRepository;
 import com.example.notes.resource.Note;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.connection.stream.RecordId;
 import org.springframework.data.redis.connection.stream.StreamRecords;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.rest.core.event.AbstractRepositoryEventListener;

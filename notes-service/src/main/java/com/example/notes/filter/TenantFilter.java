@@ -27,9 +27,9 @@ public class TenantFilter implements Filter {
         if (StringUtils.isNotBlank(tenantId)) {
             Tenant tenantExample = new Tenant();
             tenantExample.setTenantId(tenantId);
-            Tenant tenant = tenantRepository.findOne(Example.of(tenantExample)).orElseThrow(() -> new IllegalArgumentException("Tenant not found"));
-            TenantHolder.setCurrentTenant(tenant);
+            TenantHolder.setCurrentTenantId(tenantId);
             filterChain.doFilter(request, response);
+            TenantHolder.clear();
         } else {
             filterChain.doFilter(request, response);
         }

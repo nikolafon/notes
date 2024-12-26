@@ -1,9 +1,11 @@
 package com.example.notes.config;
 
-import com.example.notes.resource.User;
 import com.example.notes.filter.TenantFilter;
 import com.example.notes.repository.UserRepository;
+import com.example.notes.resource.User;
 import com.example.notes.service.MongoDbUserDetailsService;
+import com.example.notes.tenant.TenantHolder;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,7 +15,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -52,21 +53,29 @@ public class AuthorizationServerConfig {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private TenantFilter tenantFilter;
+    @Autowired
+    private CustomOAuth2AuthorizationRequestResolver customOAuth2AuthorizationRequestResolver;
+    @Autowired
+    private HttpSession httpSession;
 
     @Bean
     @Order(1)
     public SecurityFilterChain loginSecurityFilterChain(HttpSecurity http)
             throws Exception {
         http
-                .securityMatcher("/login/**","/logout/**","/login/oauth2/**","/default-ui.css","/oauth2/authorization/**")
+                .securityMatcher("/login/**", "/logout/**", "/login/oauth2/**", "/default-ui.css", "/oauth2/authorization/**")
                 .addFilterBefore(tenantFilter, AbstractPreAuthenticatedProcessingFilter.class)
                 .formLogin(Customizer.withDefaults())
-                .oauth2Login(oauth2Login ->
-                        oauth2Login
-                                .userInfoEndpoint(userInfoEndpoint ->
-                                        userInfoEndpoint
-                                                .userService(oauth2UserService())
-                                )
+                .oauth2Login(oauth2Login -> {
+                            oauth2Login.authorizationEndpoint(authorizationEndpoint ->
+                                    authorizationEndpoint.authorizationRequestResolver(customOAuth2AuthorizationRequestResolver)
+                            );
+                            oauth2Login
+                                    .userInfoEndpoint(userInfoEndpoint ->
+                                            userInfoEndpoint
+                                                    .userService(oauth2UserService())
+                                    );
+                        }
                 )
                 .cors(Customizer.withDefaults());
         return http.build();
@@ -93,14 +102,17 @@ public class AuthorizationServerConfig {
         DefaultOAuth2UserService delegate = new DefaultOAuth2UserService();
         return request -> {
             OAuth2User oauth2User = delegate.loadUser(request);
-            UserDetails userDetails = null;
             String username = oauth2User.getAttribute("login");
             String email = oauth2User.getAttribute("email");
             String name = oauth2User.getAttribute("name");
             String firstName = name.split(" ")[0];
             String lastName = name.split(" ")[1];
+            String tenant = (String) httpSession.getAttribute("tenant");
             try {
-                userDetails = userDetailsService.loadUserByUsername(username);
+                if (tenant != null) {
+                    TenantHolder.setCurrentTenantId(tenant);
+                }
+                return new DefaultOAuth2User(userDetailsService.loadUserByUsername(username).getAuthorities(), oauth2User.getAttributes(), "login");
             } catch (UsernameNotFoundException e) {
                 User user = new User();
                 user.setUsername(username);
@@ -110,9 +122,10 @@ public class AuthorizationServerConfig {
                 user.setPassword(passwordEncoder.encode(UUID.randomUUID().toString()));
                 user.setAuthorities(Set.of(new SimpleGrantedAuthority("user")));
                 userRepository.save(user);
-                userDetails = user;
+                return new DefaultOAuth2User(user.getAuthorities(), oauth2User.getAttributes(), "login");
+            } finally {
+                TenantHolder.clear();
             }
-            return new DefaultOAuth2User(userDetails.getAuthorities(), oauth2User.getAttributes(), "login");
         };
     }
 
@@ -122,6 +135,7 @@ public class AuthorizationServerConfig {
             Set<String> roles = AuthorityUtils.authorityListToSet(context.getPrincipal().getAuthorities())
                     .stream()
                     .collect(Collectors.collectingAndThen(Collectors.toSet(), Collections::unmodifiableSet));
+            context.getClaims().claim("tenant", TenantHolder.getCurrentTenantId());
             context.getClaims().claim("authorities", roles);
         };
     }
