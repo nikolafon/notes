@@ -135,7 +135,9 @@ public class AuthorizationServerConfig {
             Set<String> roles = AuthorityUtils.authorityListToSet(context.getPrincipal().getAuthorities())
                     .stream()
                     .collect(Collectors.collectingAndThen(Collectors.toSet(), Collections::unmodifiableSet));
-            context.getClaims().claim("tenant", TenantHolder.getCurrentTenantId());
+            if (TenantHolder.getCurrentTenantId() != null) {
+                context.getClaims().claim("tenant", TenantHolder.getCurrentTenantId());
+            }
             context.getClaims().claim("authorities", roles);
         };
     }

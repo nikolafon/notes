@@ -1,5 +1,6 @@
 package com.example.notes.config;
 
+import com.example.notes.filter.RateLimitFilter;
 import com.example.notes.filter.TenantFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -22,12 +23,15 @@ public class ResourceServerConfig {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private TenantFilter tenantFilter;
+    @Autowired
+    private RateLimitFilter rateLimitFilter;
 
     @Bean
     @Order(3)
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.securityMatcher("/api/**")
                 .addFilterBefore(tenantFilter, AbstractPreAuthenticatedProcessingFilter.class)
+                .addFilterBefore(rateLimitFilter, TenantFilter.class)
                 .authorizeHttpRequests(authorizeRequests -> {
                             authorizeRequests
                                     .requestMatchers(HttpMethod.GET, "/api/notes/**").hasAuthority(ROLE_USER)
