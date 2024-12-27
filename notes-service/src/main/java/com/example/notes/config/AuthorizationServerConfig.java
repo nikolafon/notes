@@ -72,7 +72,7 @@ public class AuthorizationServerConfig {
                 .addFilterBefore(tenantFilter, AbstractPreAuthenticatedProcessingFilter.class)
                 .formLogin(formLogin -> {
                             formLogin
-                                    .successHandler((request, response, authentication) -> response.sendRedirect(webappRedirectUri));
+                                    .successHandler((request, response, authentication) -> response.setStatus(HttpStatus.SC_OK));
                             formLogin
                                     .failureHandler((request, response, authentication) -> response.setStatus(HttpStatus.SC_BAD_REQUEST));
                         }
@@ -86,7 +86,6 @@ public class AuthorizationServerConfig {
                                             userInfoEndpoint
                                                     .userService(oauth2UserService())
                                     );
-                            oauth2Login.defaultSuccessUrl(webappRedirectUri);
                         }
                 )
                 .csrf(AbstractHttpConfigurer::disable)
@@ -172,8 +171,6 @@ public class AuthorizationServerConfig {
     public RegisteredClientRepository registeredClientRepository() {
         RegisteredClient registeredClient = RegisteredClient.withId(UUID.randomUUID().toString())
                 .clientId("web-client")
-                .clientSecret(passwordEncoder.encode("secret"))
-                .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
                 .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
                 .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
                 .redirectUri(webappRedirectUri)
