@@ -6,7 +6,9 @@ import com.example.notes.resource.User;
 import com.example.notes.service.MongoDbUserDetailsService;
 import com.example.notes.tenant.TenantHolder;
 import jakarta.servlet.http.HttpSession;
+import org.apache.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -58,6 +60,9 @@ public class AuthorizationServerConfig {
     @Autowired
     private HttpSession httpSession;
 
+    @Value("${webapp.redirectUri}")
+    private String webappRedirectUri;
+
     @Bean
     @Order(1)
     public SecurityFilterChain loginSecurityFilterChain(HttpSecurity http)
@@ -65,7 +70,13 @@ public class AuthorizationServerConfig {
         http
                 .securityMatcher("/login/**", "/logout/**", "/login/oauth2/**", "/default-ui.css", "/oauth2/authorization/**")
                 .addFilterBefore(tenantFilter, AbstractPreAuthenticatedProcessingFilter.class)
-                .formLogin(Customizer.withDefaults())
+                .formLogin(formLogin -> {
+                            formLogin
+                                    .successHandler((request, response, authentication) -> response.sendRedirect(webappRedirectUri));
+                            formLogin
+                                    .failureHandler((request, response, authentication) -> response.setStatus(HttpStatus.SC_BAD_REQUEST));
+                        }
+                )
                 .oauth2Login(oauth2Login -> {
                             oauth2Login.authorizationEndpoint(authorizationEndpoint ->
                                     authorizationEndpoint.authorizationRequestResolver(customOAuth2AuthorizationRequestResolver)
@@ -75,8 +86,10 @@ public class AuthorizationServerConfig {
                                             userInfoEndpoint
                                                     .userService(oauth2UserService())
                                     );
+                            oauth2Login.defaultSuccessUrl(webappRedirectUri);
                         }
                 )
+                .csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults());
         return http.build();
     }
@@ -149,7 +162,7 @@ public class AuthorizationServerConfig {
         CorsConfiguration config = new CorsConfiguration();
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
-        config.addAllowedOrigin("http://localhost:4200");
+        config.addAllowedOrigin(webappRedirectUri);
         config.setAllowCredentials(true);
         source.registerCorsConfiguration("/**", config);
         return source;
@@ -163,9 +176,8 @@ public class AuthorizationServerConfig {
                 .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
                 .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
                 .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
-                .redirectUri("http://localhost:4200/login-callback")
-                .redirectUri("https://oauth.pstmn.io/v1/callback")
-                .postLogoutRedirectUri("http://localhost:8080/login")
+                .redirectUri(webappRedirectUri)
+                .postLogoutRedirectUri(webappRedirectUri)
                 .scope(OidcScopes
                         .PROFILE)
                 .scope(OidcScopes.OPENID)

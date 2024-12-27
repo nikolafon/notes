@@ -45,7 +45,7 @@ public class NotesEventStreamService {
     @PostConstruct
     public void init() {
         StreamMessageListenerContainer.StreamMessageListenerContainerOptions<String, ObjectRecord<String, Note>> options = StreamMessageListenerContainer
-                .StreamMessageListenerContainerOptions.builder().pollTimeout(Duration.ofMillis(100)).targetType(Note.class).build();
+                .StreamMessageListenerContainerOptions.builder().pollTimeout(Duration.ofMillis(2000)).targetType(Note.class).build();
         StreamMessageListenerContainer<String, ObjectRecord<String, Note>> container = StreamMessageListenerContainer.create(connectionFactory, options);
         container.receive(StreamOffset.latest("notes"), streamListener);
         container.start();

@@ -19,6 +19,7 @@ import org.springframework.security.web.authentication.preauth.AbstractPreAuthen
 public class ResourceServerConfig {
     public static final String ROLE_USER = "SCOPE_user";
     public static final String ROLE_ADMIN = "SCOPE_admin";
+    public static final String ROLE_SUPERUSER = "SCOPE_superuser";
     @Autowired
     private PasswordEncoder passwordEncoder;
     @Autowired
@@ -34,19 +35,19 @@ public class ResourceServerConfig {
                 .addFilterBefore(rateLimitFilter, TenantFilter.class)
                 .authorizeHttpRequests(authorizeRequests -> {
                             authorizeRequests
-                                    .requestMatchers(HttpMethod.GET, "/api/notes/**").hasAuthority(ROLE_USER)
-                                    .requestMatchers(HttpMethod.POST, "/api/notes/**").hasAuthority(ROLE_USER)
-                                    .requestMatchers(HttpMethod.PUT, "/api/notes/**").hasAuthority(ROLE_USER)
-                                    .requestMatchers(HttpMethod.DELETE, "/api/notes/**").hasAuthority(ROLE_USER)
-                                    .requestMatchers(HttpMethod.GET, "/api/users/**").hasAuthority(ROLE_ADMIN)
-                                    .requestMatchers(HttpMethod.POST, "/api/users/**").hasAuthority(ROLE_ADMIN)
-                                    .requestMatchers(HttpMethod.PUT, "/api/users/**").hasAuthority(ROLE_ADMIN)
-                                    .requestMatchers(HttpMethod.DELETE, "/api/users/**").hasAuthority(ROLE_ADMIN)
-                                    .requestMatchers(HttpMethod.GET, "/api/tenants/**").hasAuthority(ROLE_ADMIN)
-                                    .requestMatchers(HttpMethod.POST, "/api/tenants/**").hasAuthority(ROLE_ADMIN)
-                                    .requestMatchers(HttpMethod.PUT, "/api/tenants/**").hasAuthority(ROLE_ADMIN)
-                                    .requestMatchers(HttpMethod.DELETE, "/api/tenants/**").hasAuthority(ROLE_ADMIN)
-                                    .requestMatchers(HttpMethod.GET, "/api/resourceaudits/**").hasAuthority(ROLE_ADMIN)
+                                    .requestMatchers(HttpMethod.GET, "/api/notes/**").hasAnyAuthority(ROLE_USER, ROLE_SUPERUSER)
+                                    .requestMatchers(HttpMethod.POST, "/api/notes/**").hasAnyAuthority(ROLE_USER, ROLE_SUPERUSER)
+                                    .requestMatchers(HttpMethod.PUT, "/api/notes/**").hasAnyAuthority(ROLE_USER, ROLE_SUPERUSER)
+                                    .requestMatchers(HttpMethod.DELETE, "/api/notes/**").hasAnyAuthority(ROLE_USER, ROLE_SUPERUSER)
+                                    .requestMatchers(HttpMethod.GET, "/api/users/**").hasAnyAuthority(ROLE_ADMIN, ROLE_SUPERUSER)
+                                    .requestMatchers(HttpMethod.POST, "/api/users/**").hasAnyAuthority(ROLE_ADMIN, ROLE_SUPERUSER)
+                                    .requestMatchers(HttpMethod.PUT, "/api/users/**").hasAnyAuthority(ROLE_ADMIN, ROLE_SUPERUSER)
+                                    .requestMatchers(HttpMethod.DELETE, "/api/users/**").hasAnyAuthority(ROLE_ADMIN, ROLE_SUPERUSER)
+                                    .requestMatchers(HttpMethod.GET, "/api/tenants/**").hasAnyAuthority(ROLE_SUPERUSER)
+                                    .requestMatchers(HttpMethod.POST, "/api/tenants/**").hasAnyAuthority(ROLE_SUPERUSER)
+                                    .requestMatchers(HttpMethod.PUT, "/api/tenants/**").hasAnyAuthority(ROLE_SUPERUSER)
+                                    .requestMatchers(HttpMethod.DELETE, "/api/tenants/**").hasAnyAuthority(ROLE_SUPERUSER)
+                                    .requestMatchers(HttpMethod.GET, "/api/resourceaudits/**").hasAnyAuthority(ROLE_SUPERUSER)
                                     .requestMatchers(HttpMethod.POST, "/api/resourceaudits/**").denyAll()
                                     .requestMatchers(HttpMethod.PUT, "/api/resourceaudits/**").denyAll()
                                     .requestMatchers(HttpMethod.DELETE, "/api/resourceaudits/**").denyAll();
