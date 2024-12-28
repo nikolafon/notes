@@ -1,10 +1,12 @@
 package com.example.notes.config;
 
+import com.example.notes.filter.CorsFilter;
 import com.example.notes.filter.TenantFilter;
 import com.example.notes.repository.UserRepository;
 import com.example.notes.resource.User;
 import com.example.notes.service.MongoDbUserDetailsService;
 import com.example.notes.tenant.TenantHolder;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpSession;
 import org.apache.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,9 +37,6 @@ import org.springframework.security.oauth2.server.authorization.token.JwtEncodin
 import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenCustomizer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Collections;
 import java.util.Set;
@@ -62,13 +61,17 @@ public class AuthorizationServerConfig {
 
     @Value("${webapp.redirectUri}")
     private String webappRedirectUri;
+    @Autowired
+    private CorsFilter corsFilter;
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Bean
     @Order(1)
     public SecurityFilterChain loginSecurityFilterChain(HttpSecurity http)
             throws Exception {
         http
-                .securityMatcher("/login/**", "/logout/**", "/login/oauth2/**", "/default-ui.css", "/oauth2/authorization/**")
+                .securityMatcher("/login/**", "/logout/**", "/login/oauth2/**", "/default-ui.css")
                 .addFilterBefore(tenantFilter, AbstractPreAuthenticatedProcessingFilter.class)
                 .formLogin(formLogin -> {
                             formLogin
@@ -88,8 +91,7 @@ public class AuthorizationServerConfig {
                                     );
                         }
                 )
-                .csrf(AbstractHttpConfigurer::disable)
-                .cors(Customizer.withDefaults());
+                .csrf(AbstractHttpConfigurer::disable);
         return http.build();
     }
 
@@ -99,14 +101,13 @@ public class AuthorizationServerConfig {
             throws Exception {
         OAuth2AuthorizationServerConfigurer authorizationServerConfigurer =
                 OAuth2AuthorizationServerConfigurer.authorizationServer();
-        http
-                .securityMatcher(authorizationServerConfigurer.getEndpointsMatcher())
+        http.addFilterAfter(corsFilter, AbstractPreAuthenticatedProcessingFilter.class).
+                securityMatcher(authorizationServerConfigurer.getEndpointsMatcher())
                 .with(authorizationServerConfigurer, (authorizationServer) ->
                         authorizationServer
                                 .oidc(Customizer.withDefaults())
                 )
-                .csrf(AbstractHttpConfigurer::disable)
-                .cors(Customizer.withDefaults());
+                .csrf(AbstractHttpConfigurer::disable);
         return http.build();
     }
 
@@ -154,23 +155,11 @@ public class AuthorizationServerConfig {
         };
     }
 
-
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        CorsConfiguration config = new CorsConfiguration();
-        config.addAllowedHeader("*");
-        config.addAllowedMethod("*");
-        config.addAllowedOrigin(webappRedirectUri);
-        config.setAllowCredentials(true);
-        source.registerCorsConfiguration("/**", config);
-        return source;
-    }
-
     @Bean
     public RegisteredClientRepository registeredClientRepository() {
         RegisteredClient registeredClient = RegisteredClient.withId(UUID.randomUUID().toString())
-                .clientId("web-client")
+                .clientId("notes-webapp")
+                .clientAuthenticationMethod(ClientAuthenticationMethod.NONE)
                 .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
                 .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
                 .redirectUri(webappRedirectUri)
@@ -180,7 +169,7 @@ public class AuthorizationServerConfig {
                 .scope(OidcScopes.OPENID)
                 .clientSettings(ClientSettings.builder()
                         .requireAuthorizationConsent(false)
-                        .requireProofKey(false).build())
+                        .requireProofKey(true).build())
                 .build();
         return new InMemoryRegisteredClientRepository(registeredClient);
     }

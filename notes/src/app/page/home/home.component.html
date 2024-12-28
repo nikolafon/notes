@@ -1,0 +1,2 @@
+Hello {{(authService.userInfo() | async)?.sub}}
+<a href="#" (click)="authService.logout()">Logout</a>
