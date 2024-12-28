@@ -7,7 +7,8 @@ import { AuthInterceptor, provideAuth } from 'angular-auth-oidc-client';
 import { HTTP_INTERCEPTORS, provideHttpClient, withFetch, withInterceptorsFromDi } from '@angular/common/http';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { CookieInterceptor } from './auth/cookie-interceptor';
+import { TenantInterceptor } from './auth/tenant-interceptor';
 
 export const appConfig: ApplicationConfig = {
-  providers: [provideHttpClient(withFetch(), withInterceptorsFromDi()), provideZoneChangeDetection({ eventCoalescing: true }), provideRouter(routes), provideAuth(authConfig), { provide: HTTP_INTERCEPTORS, useClass: CookieInterceptor, multi: true }, { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }, provideAnimationsAsync()]
+  providers: [provideHttpClient(withFetch(), withInterceptorsFromDi()), provideZoneChangeDetection({ eventCoalescing: true }), provideRouter(routes), provideAuth(authConfig), { provide: HTTP_INTERCEPTORS, useClass: CookieInterceptor, multi: true }, { provide: HTTP_INTERCEPTORS, useClass: TenantInterceptor, multi: true }, { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }, provideAnimationsAsync()]
 };

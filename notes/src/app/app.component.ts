@@ -1,6 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { LoginResponse, OidcSecurityService } from 'angular-auth-oidc-client';
 import { AuthService } from './service/auth-service';
 
 @Component({

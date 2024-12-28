@@ -18,14 +18,14 @@ export class AuthService {
             .subscribe();
     }
 
-    login(username: string, password: string) {
+    login(username: string, password: string, tenant: string = '') {
         const body = new HttpParams()
             .set('username', username)
-            .set('password', password);
+            .set('password', password)
         this.httpClient.post<string>('http://localhost:8080/login',
             body.toString(),
             {
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Tenant-Id': tenant },
             }
         ).pipe(
             take(1),
@@ -34,8 +34,10 @@ export class AuthService {
                 return [];
             }
             )
-        ).subscribe(() =>
+        ).subscribe(() => {
             this.oidcSecurityService.authorize()
+            localStorage.setItem('tenantId', tenant);
+        }
         );
     }
 

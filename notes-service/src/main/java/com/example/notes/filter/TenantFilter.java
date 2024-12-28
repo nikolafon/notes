@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -30,6 +31,7 @@ public class TenantFilter implements Filter {
         if (StringUtils.isNotBlank(tenantId)) {
             Tenant tenantExample = new Tenant();
             tenantExample.setTenantId(tenantId);
+            tenantRepository.findOne(Example.of(tenantExample)).orElseThrow(() -> new IllegalArgumentException("Invalid tenant"));
             TenantHolder.setCurrentTenantId(tenantId);
             filterChain.doFilter(request, response);
             TenantHolder.clear();

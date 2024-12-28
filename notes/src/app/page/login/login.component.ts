@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MaterialModule } from '../../material.module';
 import { AuthService } from '../../service/auth-service';
 @Component({
@@ -14,13 +14,14 @@ export class LoginComponent {
   private authService: AuthService = inject(AuthService);
 
   form: FormGroup = new FormGroup({
-    username: new FormControl(''),
-    password: new FormControl(''),
+    username: new FormControl('', Validators.required),
+    password: new FormControl('', Validators.required),
+    tenant: new FormControl(''),
   });
 
   submit() {
     if (this.form.valid) {
-      this.authService.login(this.form.get('username')?.value, this.form.get('password')?.value);
+      this.authService.login(this.form.get('username')?.value, this.form.get('password')?.value,this.form.get('tenant')?.value);
     };
   }
 
