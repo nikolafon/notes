@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
 import { MatSnackBar } from "@angular/material/snack-bar";
-import { LoginResponse, OidcSecurityService } from "angular-auth-oidc-client";
+import { OidcSecurityService } from "angular-auth-oidc-client";
 import { catchError, map, Observable, take, tap } from "rxjs";
 import { UserInfo } from "../auth/user-info";
 
@@ -13,12 +13,19 @@ export class AuthService {
     private snackBar = inject(MatSnackBar);
 
     checkAuth() {
-        this.oidcSecurityService
-            .checkAuth().pipe(take(1))
-            .subscribe();
+        if (localStorage.getItem('login') === 'github') {
+            localStorage.setItem('login', '');
+            this.oidcSecurityService.authorize();
+        } else {
+            this.oidcSecurityService
+                .checkAuth().pipe(take(1))
+                .subscribe();
+        }
+
     }
 
     login(username: string, password: string, tenant: string = '') {
+        localStorage.setItem('login', "form");
         const body = new HttpParams()
             .set('username', username)
             .set('password', password)
@@ -39,6 +46,11 @@ export class AuthService {
             localStorage.setItem('tenantId', tenant);
         }
         );
+    }
+
+    githubLogin(tenant: string = '') {
+        localStorage.setItem('login', "github");
+        window.open('http://localhost:8080/oauth2/authorization/github?tenantId=' + tenant, '_self');
     }
 
     userInfo(): Observable<UserInfo> {

@@ -71,7 +71,7 @@ public class AuthorizationServerConfig {
     public SecurityFilterChain loginSecurityFilterChain(HttpSecurity http)
             throws Exception {
         http
-                .securityMatcher("/login/**", "/logout/**", "/login/oauth2/**", "/default-ui.css")
+                .securityMatcher("/login/**", "/logout/**", "/login/oauth2/**", "/default-ui.css", "/oauth2/authorization/**")
                 .addFilterBefore(tenantFilter, AbstractPreAuthenticatedProcessingFilter.class)
                 .formLogin(formLogin -> {
                             formLogin
@@ -89,6 +89,10 @@ public class AuthorizationServerConfig {
                                             userInfoEndpoint
                                                     .userService(oauth2UserService())
                                     );
+
+                            oauth2Login.successHandler((request, response, authentication) -> {
+                               response.sendRedirect(request.getHeader("referer").substring(0, request.getHeader("referer").lastIndexOf("/")));
+                            });
                         }
                 )
                 .csrf(AbstractHttpConfigurer::disable);

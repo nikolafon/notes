@@ -25,5 +25,9 @@ export class LoginComponent {
     };
   }
 
+  githubLogin() {
+    this.authService.githubLogin(this.form.get('tenant')?.value);
+  }
+
 }
 
