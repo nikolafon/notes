@@ -23,6 +23,5 @@ public class Note extends BaseResource {
     @NotEmpty
     @Size(max = 100)
     private String owner;
-    @NotNull
     private Set<String> collaborators = new HashSet<>();
 }

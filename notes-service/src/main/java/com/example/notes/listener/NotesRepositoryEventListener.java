@@ -4,7 +4,7 @@ import com.example.notes.repository.NoteRepository;
 import com.example.notes.resource.Note;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.connection.stream.StreamRecords;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.rest.core.event.AbstractRepositoryEventListener;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,7 +18,7 @@ public class NotesRepositoryEventListener extends AbstractRepositoryEventListene
     @Autowired
     private NoteRepository noteRepository;
     @Autowired
-    private StringRedisTemplate redisTemplate;
+    private RedisTemplate<String, Object> redisTemplate;
     @Autowired
     private ObjectMapper objectMapper;
 
@@ -31,18 +31,17 @@ public class NotesRepositoryEventListener extends AbstractRepositoryEventListene
     @Override
     public void onBeforeSave(Note entity) {
         String currentCollaborator = SecurityContextHolder.getContext().getAuthentication().getName();
-        if (!entity.getCollaborators().contains(currentCollaborator)) {
+        Note oldState = noteRepository.findById(entity.getId()).orElseThrow(() -> new IllegalStateException("Note not found"));
+        if (!oldState.getCollaborators().contains(currentCollaborator)) {
             throw new IllegalStateException("You can't update a note that you are not a collaborator");
         }
-        Note oldState = noteRepository.findById(entity.getId()).orElseThrow(() -> new IllegalStateException("Note not found"));
-        if (!oldState.getOwner().equals(currentCollaborator)) {
+        if (!oldState.getCollaborators().equals(entity.getCollaborators()) && !oldState.getOwner().equals(currentCollaborator)) {
             throw new IllegalStateException("Only the owner can change collaborators");
         }
         if (!entity.getCollaborators().contains(oldState.getOwner())) {
             throw new IllegalStateException("Owner must be a collaborator");
         }
-        redisTemplate.opsForStream().add(StreamRecords.newRecord().in("notes").
-                ofObject(entity));
+        redisTemplate.convertAndSend("notes", entity);
     }
 
 }

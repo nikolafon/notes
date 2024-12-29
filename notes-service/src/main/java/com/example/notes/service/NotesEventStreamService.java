@@ -8,15 +8,13 @@ import jakarta.annotation.PreDestroy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.data.redis.connection.stream.ObjectRecord;
-import org.springframework.data.redis.connection.stream.StreamOffset;
-import org.springframework.data.redis.stream.StreamListener;
-import org.springframework.data.redis.stream.StreamMessageListenerContainer;
+import org.springframework.data.redis.listener.ChannelTopic;
+import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
-import java.time.Duration;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -37,23 +35,30 @@ public class NotesEventStreamService {
     private ObjectMapper objectMapper;
     private final Executor executor = Executors.newVirtualThreadPerTaskExecutor();
     private final Map<String, List<SseEmitter>> registeredSseEmitters = new ConcurrentHashMap<>();
-    StreamMessageListenerContainer<String, ObjectRecord<String, Note>> container;
 
-    StreamListener<String, ObjectRecord<String, Note>> streamListener = message ->
-            sendNoteUpdate(message.getValue());
+    private RedisMessageListenerContainer redisMessageListenerContainer;
 
     @PostConstruct
     public void init() {
-        StreamMessageListenerContainer.StreamMessageListenerContainerOptions<String, ObjectRecord<String, Note>> options = StreamMessageListenerContainer
-                .StreamMessageListenerContainerOptions.builder().pollTimeout(Duration.ofMillis(2000)).targetType(Note.class).build();
-        StreamMessageListenerContainer<String, ObjectRecord<String, Note>> container = StreamMessageListenerContainer.create(connectionFactory, options);
-        container.receive(StreamOffset.latest("notes"), streamListener);
-        container.start();
+        redisMessageListenerContainer = new RedisMessageListenerContainer();
+        redisMessageListenerContainer.setConnectionFactory(connectionFactory);
+        redisMessageListenerContainer.setTaskExecutor(executor);
+        redisMessageListenerContainer.addMessageListener((message, pattern) ->
+                {
+                    try {
+                        sendNoteUpdate(objectMapper.readValue(message.getBody(), Note.class));
+                    } catch (IOException e) {
+                        throw new IllegalStateException(e);
+                    }
+                }
+                , ChannelTopic.of("notes"));
+        redisMessageListenerContainer.afterPropertiesSet();
+        redisMessageListenerContainer.start();
     }
 
     @PreDestroy
-    public void destroy() {
-        container.stop();
+    public void destroy() throws Exception {
+        redisMessageListenerContainer.destroy();
     }
 
     public SseEmitter registerEventStream(String noteId) {
@@ -71,13 +76,11 @@ public class NotesEventStreamService {
             List<SseEmitter> sseEmitters = registeredSseEmitters.get(note.getId());
             if (sseEmitters != null) {
                 sseEmitters.forEach(eventStream -> {
-                    executor.execute(() -> {
-                        try {
-                            eventStream.send(note);
-                        } catch (Exception e) {
-                            eventStream.completeWithError(e);
-                        }
-                    });
+                    try {
+                        eventStream.send(note);
+                    } catch (Exception e) {
+                        eventStream.completeWithError(e);
+                    }
                 });
             }
         }
