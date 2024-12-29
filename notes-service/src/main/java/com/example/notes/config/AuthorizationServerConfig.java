@@ -161,7 +161,7 @@ public class AuthorizationServerConfig {
 
     @Bean
     public RegisteredClientRepository registeredClientRepository() {
-        RegisteredClient registeredClient = RegisteredClient.withId(UUID.randomUUID().toString())
+        RegisteredClient notesWebApp = RegisteredClient.withId(UUID.randomUUID().toString())
                 .clientId("notes-webapp")
                 .clientAuthenticationMethod(ClientAuthenticationMethod.NONE)
                 .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
@@ -175,7 +175,19 @@ public class AuthorizationServerConfig {
                         .requireAuthorizationConsent(false)
                         .requireProofKey(true).build())
                 .build();
-        return new InMemoryRegisteredClientRepository(registeredClient);
+
+        RegisteredClient postman = RegisteredClient.withId(UUID.randomUUID().toString())
+                .clientId("postman")
+                .clientSecret(passwordEncoder.encode("secret"))
+                .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
+                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
+                .redirectUri("https://oauth.pstmn.io/v1/callback")
+                .scope(OidcScopes.OPENID)
+                .clientSettings(ClientSettings.builder()
+                        .requireAuthorizationConsent(false)
+                        .requireProofKey(false).build())
+                .build();
+        return new InMemoryRegisteredClientRepository(notesWebApp,postman);
     }
 
 }

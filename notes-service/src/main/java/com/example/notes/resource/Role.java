@@ -1,7 +1,7 @@
 package com.example.notes.resource;
 
 public enum Role {
-    SUPER_ADMIN("SUPER_ADMIN"), ADMIN("ADMIN"), USER("USER");
+    SUPER_ADMIN("super_admin"), ADMIN("admin"), USER("user");
 
     Role(String role) {
         this.role = role;

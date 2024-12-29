@@ -28,9 +28,17 @@
     background-color: red;
   }
 
+  .social {
+    margin-top: 5px;
+    display: flex;
+    justify-content: center;
+    cursor: pointer;
+  }
+
   .button {
     display: flex;
     justify-content: flex-end;
+    margin-right: 15px;
   }
   .button img {
     width: 30px;

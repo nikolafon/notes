@@ -17,9 +17,9 @@ import org.springframework.security.web.authentication.preauth.AbstractPreAuthen
 
 @Configuration
 public class ResourceServerConfig {
-    public static final String ROLE_USER = "SCOPE_user";
-    public static final String ROLE_ADMIN = "SCOPE_admin";
-    public static final String ROLE_SUPERUSER = "SCOPE_superuser";
+    public static final String SCOPE_USER = "SCOPE_user";
+    public static final String SCOPE_ADMIN = "SCOPE_admin";
+    public static final String SCOPE_SUPERADMIN = "SCOPE_super_admin";
     @Autowired
     private PasswordEncoder passwordEncoder;
     @Autowired
@@ -34,22 +34,22 @@ public class ResourceServerConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.securityMatcher("/api/**")
                 .addFilterBefore(tenantFilter, AbstractPreAuthenticatedProcessingFilter.class)
-                .addFilterBefore(rateLimitFilter, TenantFilter.class)
+                .addFilterAfter(rateLimitFilter, TenantFilter.class)
                 .authorizeHttpRequests(authorizeRequests -> {
                             authorizeRequests
-                                    .requestMatchers(HttpMethod.GET, "/api/notes/**").hasAnyAuthority(ROLE_USER, ROLE_SUPERUSER)
-                                    .requestMatchers(HttpMethod.POST, "/api/notes/**").hasAnyAuthority(ROLE_USER, ROLE_SUPERUSER)
-                                    .requestMatchers(HttpMethod.PUT, "/api/notes/**").hasAnyAuthority(ROLE_USER, ROLE_SUPERUSER)
-                                    .requestMatchers(HttpMethod.DELETE, "/api/notes/**").hasAnyAuthority(ROLE_USER, ROLE_SUPERUSER)
-                                    .requestMatchers(HttpMethod.GET, "/api/users/**").hasAnyAuthority(ROLE_ADMIN, ROLE_SUPERUSER)
-                                    .requestMatchers(HttpMethod.POST, "/api/users/**").hasAnyAuthority(ROLE_ADMIN, ROLE_SUPERUSER)
-                                    .requestMatchers(HttpMethod.PUT, "/api/users/**").hasAnyAuthority(ROLE_ADMIN, ROLE_SUPERUSER)
-                                    .requestMatchers(HttpMethod.DELETE, "/api/users/**").hasAnyAuthority(ROLE_ADMIN, ROLE_SUPERUSER)
-                                    .requestMatchers(HttpMethod.GET, "/api/tenants/**").hasAnyAuthority(ROLE_SUPERUSER)
-                                    .requestMatchers(HttpMethod.POST, "/api/tenants/**").hasAnyAuthority(ROLE_SUPERUSER)
-                                    .requestMatchers(HttpMethod.PUT, "/api/tenants/**").hasAnyAuthority(ROLE_SUPERUSER)
-                                    .requestMatchers(HttpMethod.DELETE, "/api/tenants/**").hasAnyAuthority(ROLE_SUPERUSER)
-                                    .requestMatchers(HttpMethod.GET, "/api/resourceaudits/**").hasAnyAuthority(ROLE_SUPERUSER)
+                                    .requestMatchers(HttpMethod.GET, "/api/notes/**").hasAnyAuthority(SCOPE_USER, SCOPE_SUPERADMIN)
+                                    .requestMatchers(HttpMethod.POST, "/api/notes/**").hasAnyAuthority(SCOPE_USER, SCOPE_SUPERADMIN)
+                                    .requestMatchers(HttpMethod.PUT, "/api/notes/**").hasAnyAuthority(SCOPE_USER, SCOPE_SUPERADMIN)
+                                    .requestMatchers(HttpMethod.DELETE, "/api/notes/**").hasAnyAuthority(SCOPE_USER, SCOPE_SUPERADMIN)
+                                    .requestMatchers(HttpMethod.GET, "/api/users/**").hasAnyAuthority(SCOPE_ADMIN, SCOPE_SUPERADMIN)
+                                    .requestMatchers(HttpMethod.POST, "/api/users/**").hasAnyAuthority(SCOPE_ADMIN, SCOPE_SUPERADMIN)
+                                    .requestMatchers(HttpMethod.PUT, "/api/users/**").hasAnyAuthority(SCOPE_ADMIN, SCOPE_SUPERADMIN)
+                                    .requestMatchers(HttpMethod.DELETE, "/api/users/**").hasAnyAuthority(SCOPE_ADMIN, SCOPE_SUPERADMIN)
+                                    .requestMatchers(HttpMethod.GET, "/api/tenants/**").hasAnyAuthority(SCOPE_SUPERADMIN)
+                                    .requestMatchers(HttpMethod.POST, "/api/tenants/**").hasAnyAuthority(SCOPE_SUPERADMIN)
+                                    .requestMatchers(HttpMethod.PUT, "/api/tenants/**").hasAnyAuthority(SCOPE_SUPERADMIN)
+                                    .requestMatchers(HttpMethod.DELETE, "/api/tenants/**").hasAnyAuthority(SCOPE_SUPERADMIN)
+                                    .requestMatchers(HttpMethod.GET, "/api/resourceaudits/**").hasAnyAuthority(SCOPE_SUPERADMIN)
                                     .requestMatchers(HttpMethod.POST, "/api/resourceaudits/**").denyAll()
                                     .requestMatchers(HttpMethod.PUT, "/api/resourceaudits/**").denyAll()
                                     .requestMatchers(HttpMethod.DELETE, "/api/resourceaudits/**").denyAll();
