@@ -3,16 +3,19 @@ package com.example.notes.resource;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.FieldNameConstants;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.io.Serializable;
 import java.time.ZonedDateTime;
 
 @Data
 @Document(collection = "resource_audits")
+@FieldNameConstants
 @NoArgsConstructor
 @AllArgsConstructor
-public class ResourceAudit {
+public class ResourceAudit implements Serializable {
 
     @Id
     private String id;

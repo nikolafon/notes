@@ -2,7 +2,7 @@ package com.example.notes.config;
 
 import com.example.notes.filter.CorsFilter;
 import com.example.notes.filter.TenantFilter;
-import com.example.notes.repository.UserRepository;
+import com.example.notes.repository.ResourceRepository;
 import com.example.notes.resource.User;
 import com.example.notes.service.MongoDbUserDetailsService;
 import com.example.notes.tenant.TenantHolder;
@@ -49,7 +49,7 @@ public class AuthorizationServerConfig {
     @Autowired
     private MongoDbUserDetailsService userDetailsService;
     @Autowired
-    private UserRepository userRepository;
+    private ResourceRepository resourceRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
     @Autowired
@@ -138,7 +138,7 @@ public class AuthorizationServerConfig {
                 user.setLastName(lastName);
                 user.setPassword(passwordEncoder.encode(UUID.randomUUID().toString()));
                 user.setAuthorities(Set.of(new SimpleGrantedAuthority("user")));
-                userRepository.save(user);
+                resourceRepository.create(user);
                 return new DefaultOAuth2User(user.getAuthorities(), oauth2User.getAttributes(), "login");
             } finally {
                 TenantHolder.clear();

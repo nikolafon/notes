@@ -1,6 +1,6 @@
 package com.example.notes.service;
 
-import com.example.notes.repository.NoteRepository;
+import com.example.notes.repository.ResourceRepository;
 import com.example.notes.resource.Note;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
@@ -26,7 +26,7 @@ import java.util.concurrent.Executors;
 public class NotesEventStreamService {
 
     @Autowired
-    private NoteRepository noteRepository;
+    private NotesService notesService;
     @Autowired
     private MongoTemplate mongoTemplate;
     @Autowired
@@ -62,9 +62,10 @@ public class NotesEventStreamService {
     }
 
     public SseEmitter registerEventStream(String noteId) {
-        Note note = noteRepository.findById(noteId).orElseThrow(() -> new IllegalArgumentException("Note not found"));
-        if (!note.getCollaborators().contains(SecurityContextHolder.getContext().getAuthentication().getName())) {
-            throw new IllegalArgumentException("You are not a collaborator on this note");
+        Note note = notesService.get(noteId);
+        if (!note.getCollaborators().contains(SecurityContextHolder.getContext().getAuthentication().getName()) ||
+                !note.getOwner().equals(SecurityContextHolder.getContext().getAuthentication().getName())) {
+            throw new IllegalArgumentException("You are not an owner or collaborator on this note");
         }
         SseEmitter sseEmitter = createSseEmitter(noteId);
         registeredSseEmitters.computeIfAbsent(noteId, k -> new ArrayList<>()).add(sseEmitter);
@@ -72,17 +73,15 @@ public class NotesEventStreamService {
     }
 
     public void sendNoteUpdate(Note note) {
-        if (note != null) {
-            List<SseEmitter> sseEmitters = registeredSseEmitters.get(note.getId());
-            if (sseEmitters != null) {
-                sseEmitters.forEach(eventStream -> {
-                    try {
-                        eventStream.send(note);
-                    } catch (Exception e) {
-                        eventStream.completeWithError(e);
-                    }
-                });
-            }
+        List<SseEmitter> sseEmitters = registeredSseEmitters.get(note.getId());
+        if (sseEmitters != null) {
+            sseEmitters.forEach(eventStream -> {
+                try {
+                    eventStream.send(note);
+                } catch (Exception e) {
+                    eventStream.completeWithError(e);
+                }
+            });
         }
     }
 

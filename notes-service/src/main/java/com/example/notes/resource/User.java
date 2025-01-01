@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.experimental.FieldNameConstants;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -13,9 +14,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Set;
 
 @EqualsAndHashCode(callSuper = true)
+@FieldNameConstants
 @Data
-@Document(collection = "#{@tenantCollectionNameResolver.getTenantCollectionName('users')}")
+@Document(collection = "users")
 public class User extends BaseResource implements UserDetails {
+    @Indexed(unique = true)
+    private String tenantId;
     @NotEmpty
     @Size(max = 50)
     private String firstName;

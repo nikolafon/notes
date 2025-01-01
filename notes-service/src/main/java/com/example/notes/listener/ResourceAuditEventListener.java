@@ -1,13 +1,12 @@
 package com.example.notes.listener;
 
+import com.example.notes.repository.ResourceRepository;
 import com.example.notes.resource.BaseResource;
 import com.example.notes.resource.ResourceAction;
 import com.example.notes.resource.ResourceAudit;
-import com.example.notes.repository.ResourceAuditRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.data.mongodb.MongoExpression;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.rest.core.event.BeforeCreateEvent;
@@ -23,9 +22,7 @@ import java.time.ZonedDateTime;
 public class ResourceAuditEventListener {
 
     @Autowired
-    private ResourceAuditRepository resourceAuditRepository;
-    @Autowired
-    private MongoTemplate mongoTemplate;
+    private ResourceRepository resourceRepository;
 
     @EventListener
     public void handleBeforeCreate(BeforeCreateEvent event) {
@@ -41,7 +38,7 @@ public class ResourceAuditEventListener {
             resourceAudit.setActionedOn(now);
             resourceAudit.setActionedBy(username);
             resourceAudit.setNewState(entity);
-            resourceAuditRepository.save(resourceAudit);
+            resourceRepository.create(resourceAudit);
         }
     }
 
@@ -58,10 +55,10 @@ public class ResourceAuditEventListener {
             resourceAudit.setAction(ResourceAction.UPDATE);
             resourceAudit.setActionedOn(now);
             resourceAudit.setActionedBy(username);
-            BaseResource oldState = mongoTemplate.findOne(Query.query(Criteria.expr(MongoExpression.create(String.format("{ id: '%s' }", entity.getId())))), entity.getClass());
+            BaseResource oldState = (BaseResource) resourceRepository.find(Query.query(Criteria.expr(MongoExpression.create(String.format("{ id: '%s' }", entity.getId())))), entity.getClass());
             resourceAudit.setOldState(oldState);
             resourceAudit.setNewState(entity);
-            resourceAuditRepository.save(resourceAudit);
+            resourceRepository.create(resourceAudit);
         }
     }
 
@@ -78,7 +75,7 @@ public class ResourceAuditEventListener {
             resourceAudit.setActionedBy(username);
             resourceAudit.setOldState(entity);
             resourceAudit.setNewState(null);
-            resourceAuditRepository.save(resourceAudit);
+            resourceRepository.create(resourceAudit);
         }
     }
 
