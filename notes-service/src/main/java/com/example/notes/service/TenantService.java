@@ -6,20 +6,23 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.BasicQuery;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 public class TenantService {
 
     @Autowired
-    private MongoTemplate mongoTemplate;
-    @Autowired
     private ObjectMapper objectMapper;
     @Autowired
     private ResourceRepository resourceRepository;
+
+    public List<Tenant> find(String query) {
+        return resourceRepository.find(new BasicQuery(query), Tenant.class);
+    }
 
     public Page<Tenant> find(String query, Pageable pageable) {
         return resourceRepository.find(new BasicQuery(query).with(pageable), pageable, Tenant.class);

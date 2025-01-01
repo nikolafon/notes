@@ -32,7 +32,7 @@ public class MongoConfig {
         return converter;
     }
 
-    @Bean
+    //@Bean enable when replica set is enabled
     MongoTransactionManager transactionManager(MongoDatabaseFactory dbFactory) {
         return new MongoTransactionManager(dbFactory);
     }

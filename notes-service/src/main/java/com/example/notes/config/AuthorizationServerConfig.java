@@ -4,7 +4,7 @@ import com.example.notes.filter.CorsFilter;
 import com.example.notes.filter.TenantFilter;
 import com.example.notes.repository.ResourceRepository;
 import com.example.notes.resource.User;
-import com.example.notes.service.MongoDbUserDetailsService;
+import com.example.notes.service.UserDetailsService;
 import com.example.notes.tenant.TenantHolder;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpSession;
@@ -47,7 +47,7 @@ import java.util.stream.Collectors;
 public class AuthorizationServerConfig {
 
     @Autowired
-    private MongoDbUserDetailsService userDetailsService;
+    private UserDetailsService userDetailsService;
     @Autowired
     private ResourceRepository resourceRepository;
     @Autowired

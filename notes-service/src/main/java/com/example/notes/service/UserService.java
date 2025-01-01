@@ -6,20 +6,24 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 public class UserService extends BaseTenantService {
 
     @Autowired
-    private MongoTemplate mongoTemplate;
-    @Autowired
     private ObjectMapper objectMapper;
     @Autowired
     private ResourceRepository resourceRepository;
+
+    public List<User> find(String query) {
+        Query mongoQuery = createQueryWithAdditionalTenantFilter(query);
+        return resourceRepository.find(mongoQuery, User.class);
+    }
 
     public Page<User> find(String query, Pageable pageable) {
         Query mongoQuery = createQueryWithAdditionalTenantFilter(query).with(pageable);
@@ -34,14 +38,16 @@ public class UserService extends BaseTenantService {
     }
 
     @Transactional
-    public User create(User note) {
-        return resourceRepository.create(note);
+    public User create(User user) {
+        tenantExists(user.getTenantId());
+        return resourceRepository.create(user);
     }
 
     @Transactional
-    public User update(User note) {
-        get(note.getId());
-        return resourceRepository.update(note);
+    public User update(User user) {
+        tenantExists(user.getTenantId());
+        get(user.getId());
+        return resourceRepository.update(user);
     }
 
     @Transactional

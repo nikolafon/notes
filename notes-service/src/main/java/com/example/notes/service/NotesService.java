@@ -44,6 +44,7 @@ public class NotesService extends BaseTenantService {
 
     @Transactional
     public Note create(Note note) {
+        tenantExists(note.getTenantId());
         note.setOwner(SecurityContextHolder.getContext().getAuthentication().getName());
         note.setTenantId(TenantHolder.getCurrentTenantId());
         return resourceRepository.create(note);
@@ -51,6 +52,7 @@ public class NotesService extends BaseTenantService {
 
     @Transactional
     public Note update(Note note) {
+        tenantExists(note.getTenantId());
         Note oldState = get(note.getId());
         String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
         if (!oldState.getCollaborators().equals(note.getCollaborators()) && !oldState.getOwner().equals(currentUser)) {

@@ -1,6 +1,5 @@
 package com.example.notes.service;
 
-import com.example.notes.repository.ResourceRepository;
 import com.example.notes.resource.Note;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
