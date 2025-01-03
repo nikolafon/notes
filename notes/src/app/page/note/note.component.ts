@@ -43,6 +43,10 @@ export class NoteComponent implements OnInit {
     };
   }
 
+  back() {
+    this.router.navigate (['/notes']);
+  }
+
 
 }
 

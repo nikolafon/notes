@@ -1,3 +1,4 @@
+<div class="container">
 <mat-card>
 
   <mat-card-title>Note</mat-card-title>
@@ -13,7 +14,9 @@
     </mat-card-content>
     <mat-card-footer>
         <button [disabled]="!form.valid" type="submit" mat-button>Save</button>
+        <button type="button" (click)="back()" mat-button>Back</button>
     </mat-card-footer>
   </form>
 
 </mat-card>
+</div>
