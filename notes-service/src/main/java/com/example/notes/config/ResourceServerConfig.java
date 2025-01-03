@@ -37,11 +37,11 @@ public class ResourceServerConfig {
                 .addFilterAfter(rateLimitFilter, TenantFilter.class)
                 .authorizeHttpRequests(authorizeRequests -> {
                             authorizeRequests
-                                    .requestMatchers(HttpMethod.GET, "/api/notes/**").hasAnyAuthority(SCOPE_USER, SCOPE_SUPERADMIN)
-                                    .requestMatchers(HttpMethod.POST, "/api/notes/**").hasAnyAuthority(SCOPE_USER, SCOPE_SUPERADMIN)
-                                    .requestMatchers(HttpMethod.PUT, "/api/notes/**").hasAnyAuthority(SCOPE_USER, SCOPE_SUPERADMIN)
-                                    .requestMatchers(HttpMethod.DELETE, "/api/notes/**").hasAnyAuthority(SCOPE_USER, SCOPE_SUPERADMIN)
-                                    .requestMatchers(HttpMethod.GET, "/api/users/**").hasAnyAuthority(SCOPE_ADMIN, SCOPE_SUPERADMIN)
+                                    .requestMatchers(HttpMethod.GET, "/api/notes/**").hasAnyAuthority(SCOPE_USER, SCOPE_ADMIN, SCOPE_SUPERADMIN)
+                                    .requestMatchers(HttpMethod.POST, "/api/notes/**").hasAnyAuthority(SCOPE_USER, SCOPE_ADMIN, SCOPE_SUPERADMIN)
+                                    .requestMatchers(HttpMethod.PUT, "/api/notes/**").hasAnyAuthority(SCOPE_USER, SCOPE_ADMIN, SCOPE_SUPERADMIN)
+                                    .requestMatchers(HttpMethod.DELETE, "/api/notes/**").hasAnyAuthority(SCOPE_USER, SCOPE_ADMIN, SCOPE_SUPERADMIN)
+                                    .requestMatchers(HttpMethod.GET, "/api/users/**").hasAnyAuthority(SCOPE_ADMIN, SCOPE_USER, SCOPE_SUPERADMIN)
                                     .requestMatchers(HttpMethod.POST, "/api/users/**").hasAnyAuthority(SCOPE_ADMIN, SCOPE_SUPERADMIN)
                                     .requestMatchers(HttpMethod.PUT, "/api/users/**").hasAnyAuthority(SCOPE_ADMIN, SCOPE_SUPERADMIN)
                                     .requestMatchers(HttpMethod.DELETE, "/api/users/**").hasAnyAuthority(SCOPE_ADMIN, SCOPE_SUPERADMIN)
@@ -52,7 +52,8 @@ public class ResourceServerConfig {
                                     .requestMatchers(HttpMethod.GET, "/api/resourceaudits/**").hasAnyAuthority(SCOPE_SUPERADMIN)
                                     .requestMatchers(HttpMethod.POST, "/api/resourceaudits/**").denyAll()
                                     .requestMatchers(HttpMethod.PUT, "/api/resourceaudits/**").denyAll()
-                                    .requestMatchers(HttpMethod.DELETE, "/api/resourceaudits/**").denyAll();
+                                    .requestMatchers(HttpMethod.DELETE, "/api/resourceaudits/**").denyAll()
+                                    .requestMatchers(HttpMethod.OPTIONS, "/api/**").permitAll();
                             authorizeRequests
                                     .anyRequest().authenticated();
                         }

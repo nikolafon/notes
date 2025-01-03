@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedModel;
 import org.springframework.web.bind.annotation.*;
 
 @RestController()
@@ -16,8 +17,8 @@ public class ResourceAuditController {
     private ResourceAuditService resourceAuditService;
 
     @GetMapping
-    private Page<ResourceAudit> find(@RequestParam(required = false) String query, Pageable pageable) {
-        return resourceAuditService.find(query, pageable);
+    private PagedModel<ResourceAudit> find(@RequestParam(required = false) String query, Pageable pageable) {
+        return new PagedModel<>(resourceAuditService.find(query, pageable));
     }
 
     @GetMapping(path = "/{id}")

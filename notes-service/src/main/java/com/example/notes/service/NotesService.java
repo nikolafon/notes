@@ -42,23 +42,21 @@ public class NotesService extends BaseTenantService {
                 .orElseThrow(() -> new IllegalStateException("Note not found"));
     }
 
-    @Transactional
+    //@Transactional
     public Note create(Note note) {
-        tenantExists(note.getTenantId());
         note.setOwner(SecurityContextHolder.getContext().getAuthentication().getName());
         note.setTenantId(TenantHolder.getCurrentTenantId());
         return resourceRepository.create(note);
     }
 
-    @Transactional
+    //@Transactional
     public Note update(Note note) {
-        tenantExists(note.getTenantId());
         Note oldState = get(note.getId());
         String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
         if (!oldState.getCollaborators().equals(note.getCollaborators()) && !oldState.getOwner().equals(currentUser)) {
             throw new IllegalStateException("Only the owner can change collaborators");
         }
-        if (!oldState.getCollaborators().contains(currentUser) || !oldState.getOwner().equals(currentUser)) {
+        if (!oldState.getCollaborators().contains(currentUser) && !oldState.getOwner().equals(currentUser)) {
             throw new IllegalStateException("You can't update a note that you are not an owner or collaborator");
         }
         if (!oldState.getOwner().equals(note.getOwner())) {
@@ -66,16 +64,17 @@ public class NotesService extends BaseTenantService {
         }
         note.setOwner(SecurityContextHolder.getContext().getAuthentication().getName());
         note.setCollaborators(Set.of(note.getOwner()));
-        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-            @Override
-            public void afterCommit() {
-                redisTemplate.convertAndSend("notes", note);
-            }
-        });
+//        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+//            @Override
+//            public void afterCommit() {
+//                redisTemplate.convertAndSend("notes", note);
+//            }
+//        });
+        redisTemplate.convertAndSend("notes", note);
         return resourceRepository.update(note);
     }
 
-    @Transactional
+    //@Transactional
     public void delete(String id) {
         resourceRepository.delete(get(id).getId(), Note.class);
     }

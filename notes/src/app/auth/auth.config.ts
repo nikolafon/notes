@@ -5,7 +5,7 @@ export const authConfig: PassedInitialConfig = {
               authority: 'http://localhost:8080/.well-known/openid-configuration',
               redirectUrl: window.location.origin,
               postLogoutRedirectUri: window.location.origin,
-              postLoginRoute: 'home',
+              postLoginRoute: 'notes',
               clientId: 'notes-webapp',
               scope: 'openid',
               responseType: 'code',
@@ -13,5 +13,6 @@ export const authConfig: PassedInitialConfig = {
               useRefreshToken: true,
               renewTimeBeforeTokenExpiresInSeconds: 30,
               disablePkce: false,
+              secureRoutes: ['http://localhost:8080'],
           }
 }

@@ -2,7 +2,7 @@ import { HttpClient, HttpParams } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { OidcSecurityService } from "angular-auth-oidc-client";
-import { catchError, map, Observable, take, tap } from "rxjs";
+import { catchError, map, Observable, take } from "rxjs";
 import { UserInfo } from "../auth/user-info";
 
 @Injectable({ providedIn: 'root' })
@@ -17,15 +17,19 @@ export class AuthService {
             localStorage.setItem('login', '');
             this.oidcSecurityService.authorize();
         } else {
-            this.oidcSecurityService
-                .checkAuth().pipe(take(1))
-                .subscribe();
+            this.oidcSecurityService.checkAuth().subscribe(authResponse => {
+                if (authResponse.errorMessage) {
+                    this.snackBar.open(authResponse.errorMessage, 'Dismiss', { duration: 3000 });
+                }
+            });
         }
+    }
 
+    isAuthenticated(): Observable<boolean> {
+        return this.oidcSecurityService.isAuthenticated$.pipe(map(({ isAuthenticated }) => isAuthenticated));
     }
 
     login(username: string, password: string, tenant: string = '') {
-        localStorage.setItem('login', "form");
         const body = new HttpParams()
             .set('username', username)
             .set('password', password)
@@ -42,8 +46,8 @@ export class AuthService {
             }
             )
         ).subscribe(() => {
-            this.oidcSecurityService.authorize()
             localStorage.setItem('tenantId', tenant);
+            this.oidcSecurityService.authorize();
         }
         );
     }

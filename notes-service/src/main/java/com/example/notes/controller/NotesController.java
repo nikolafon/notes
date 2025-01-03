@@ -6,6 +6,7 @@ import com.example.notes.service.NotesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedModel;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -25,8 +26,8 @@ public class NotesController {
     }
 
     @GetMapping
-    private Page<Note> find(@RequestParam(required = false) String query, Pageable pageable) {
-        return notesService.find(query, pageable);
+    private PagedModel<Note> find(@RequestParam(required = false) String query, Pageable pageable) {
+        return new PagedModel<>(notesService.find(query, pageable));
     }
 
     @GetMapping(path = "/{id}")
@@ -45,7 +46,7 @@ public class NotesController {
         return notesService.update(note);
     }
 
-    @DeleteMapping(path = "/{id}")
+    @RequestMapping(path = "/{id}")
     private void delete(@PathVariable String id) {
         notesService.delete(id);
     }

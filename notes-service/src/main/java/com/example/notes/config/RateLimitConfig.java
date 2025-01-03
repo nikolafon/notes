@@ -7,13 +7,9 @@ import io.github.bucket4j.distributed.ExpirationAfterWriteStrategy;
 import io.github.bucket4j.distributed.proxy.ProxyManager;
 import io.github.bucket4j.redis.lettuce.cas.LettuceBasedProxyManager;
 import io.lettuce.core.RedisClient;
-import io.lettuce.core.RedisURI;
 import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.codec.ByteArrayCodec;
-import io.lettuce.core.codec.RedisCodec;
-import io.lettuce.core.codec.StringCodec;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -39,8 +35,8 @@ public class RateLimitConfig {
 
     @Bean
     public Supplier<BucketConfiguration> bucketConfiguration() {
-        Refill refill = Refill.intervally(10, Duration.ofMinutes(1));
-        Bandwidth limit = Bandwidth.classic(10, refill);
+        Refill refill = Refill.intervally(100, Duration.ofMinutes(1));
+        Bandwidth limit = Bandwidth.classic(100, refill);
         return () -> BucketConfiguration.builder()
                 .addLimit(limit)
                 .build();

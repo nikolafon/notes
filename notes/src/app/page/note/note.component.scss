@@ -1,0 +1,22 @@
+mat-card-content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+mat-form-field {
+    min-width: 300px;
+}
+
+mat-card-title {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+}
+
+mat-card-footer {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    padding-left: 10px;
+    padding-bottom: 10px 
+}

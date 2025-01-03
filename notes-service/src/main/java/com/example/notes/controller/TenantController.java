@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedModel;
 import org.springframework.web.bind.annotation.*;
 
 @RestController()
@@ -17,8 +18,8 @@ public class TenantController {
 
 
     @GetMapping
-    private Page<Tenant> find(@RequestParam(required = false) String query, Pageable pageable) {
-        return tenantService.find(query, pageable);
+    private PagedModel<Tenant> find(@RequestParam(required = false) String query, Pageable pageable) {
+        return new PagedModel<>(tenantService.find(query, pageable));
     }
 
     @GetMapping(path = "/{id}")
@@ -37,7 +38,7 @@ public class TenantController {
         return tenantService.update(tenant);
     }
 
-    @DeleteMapping(path = "/{id}")
+    @RequestMapping(path = "/{id}")
     private void delete(@PathVariable String id) {
         tenantService.delete(id);
     }

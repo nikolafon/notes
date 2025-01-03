@@ -14,6 +14,7 @@ import java.time.ZonedDateTime;
 public abstract class BaseResource implements Serializable {
 
     @Id
+    @NotEmpty
     private String id;
     private ZonedDateTime createdOn;
     private ZonedDateTime updatedOn;

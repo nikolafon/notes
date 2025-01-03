@@ -1,8 +1,9 @@
 import { Routes } from '@angular/router';
+import { AppComponent } from './app.component';
 import { isAuthenticated } from './auth/auth.guard';
 import { LoginComponent } from './page/login/login.component';
-import { AppComponent } from './app.component';
-import { HomeComponent } from './page/home/home.component';
+import { NoteComponent } from './page/note/note.component';
+import { NotesComponent } from './page/notes/notes.component';
 
 export const routes: Routes = [{
     path: '',
@@ -10,8 +11,18 @@ export const routes: Routes = [{
     canActivate: [isAuthenticated]
 },
 {
-    path: 'home',
-    component: HomeComponent,
+    path: 'notes',
+    component: NotesComponent,
+    canActivate: [isAuthenticated]
+},
+{
+    path: 'note',
+    component: NoteComponent,
+    canActivate: [isAuthenticated]
+},
+{
+    path: 'note/:id',
+    component: NoteComponent,
     canActivate: [isAuthenticated]
 },
 {

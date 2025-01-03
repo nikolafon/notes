@@ -34,18 +34,18 @@ public class TenantService {
                 .orElseThrow(() -> new IllegalStateException("Tenant not found"));
     }
 
-    @Transactional
+    //@Transactional
     public Tenant create(Tenant note) {
         return resourceRepository.create(note);
     }
 
-    @Transactional
+    //@Transactional
     public Tenant update(Tenant note) {
         get(note.getId());
         return resourceRepository.update(note);
     }
 
-    @Transactional
+    //@Transactional
     public void delete(String id) {
         resourceRepository.delete(get(id).getId(), Tenant.class);
     }

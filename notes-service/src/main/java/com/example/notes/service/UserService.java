@@ -37,20 +37,18 @@ public class UserService extends BaseTenantService {
                 .orElseThrow(() -> new IllegalStateException("User not found"));
     }
 
-    @Transactional
+    //@Transactional
     public User create(User user) {
-        tenantExists(user.getTenantId());
         return resourceRepository.create(user);
     }
 
-    @Transactional
+    //@Transactional
     public User update(User user) {
-        tenantExists(user.getTenantId());
         get(user.getId());
         return resourceRepository.update(user);
     }
 
-    @Transactional
+    //@Transactional
     public void delete(String id) {
         resourceRepository.delete(get(id).getId(), User.class);
     }
