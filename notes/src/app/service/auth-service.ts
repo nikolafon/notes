@@ -54,6 +54,7 @@ export class AuthService {
 
     githubLogin(tenant: string = '') {
         localStorage.setItem('login', "github");
+        localStorage.setItem('tenantId', tenant);
         window.open('http://localhost:8080/oauth2/authorization/github?tenantId=' + tenant, '_self');
     }
 

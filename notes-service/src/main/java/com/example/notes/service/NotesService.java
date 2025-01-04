@@ -7,14 +7,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.mongodb.MongoExpression;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionSynchronization;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.util.Set;
 
@@ -32,11 +31,13 @@ public class NotesService extends BaseTenantService {
 
     public Page<Note> find(String query, Pageable pageable) {
         Query mongoQuery = createQueryWithAdditionalTenantFilter(query).with(pageable);
+        addNoteFilter(mongoQuery);
         return resourceRepository.find(mongoQuery, pageable, Note.class);
     }
 
     public Note get(String id) {
         Query mongoQuery = createQueryWithAdditionalTenantFilter(String.format("{id : '%s'}", id));
+        addNoteFilter(mongoQuery);
         return resourceRepository.find(mongoQuery, Note.class).stream()
                 .findFirst()
                 .orElseThrow(() -> new IllegalStateException("Note not found"));
@@ -77,6 +78,11 @@ public class NotesService extends BaseTenantService {
     //@Transactional
     public void delete(String id) {
         resourceRepository.delete(get(id).getId(), Note.class);
+    }
+
+    private static void addNoteFilter(Query mongoQuery) {
+        String user = SecurityContextHolder.getContext().getAuthentication().getName();
+        mongoQuery.addCriteria(new Criteria().orOperator(Criteria.where(Note.Fields.owner).is(user), Criteria.where(Note.Fields.collaborators).is(user)));
     }
 
 }

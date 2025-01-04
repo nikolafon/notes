@@ -13,10 +13,8 @@ public class BaseTenantService {
 
     protected Query createQueryWithAdditionalTenantFilter(String queryString) {
         Query query = new BasicQuery(queryString);
-        if (TenantHolder.isCurrentTenantPresent()) {
-            Criteria additionalCriteria = Criteria.where("tenantId").is(TenantHolder.getCurrentTenantId());
-            query.addCriteria(additionalCriteria);
-        }
+        Criteria additionalCriteria = Criteria.where("tenantId").is(TenantHolder.getCurrentTenantId());
+        query.addCriteria(additionalCriteria);
         return query;
     }
 
