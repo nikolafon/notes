@@ -8,7 +8,8 @@ import { HTTP_INTERCEPTORS, provideHttpClient, withFetch, withInterceptorsFromDi
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { CookieInterceptor } from './auth/cookie-interceptor';
 import { TenantInterceptor } from './auth/tenant-interceptor';
+import { CustomAuthInterceptor } from './auth/custom-auth-interceptor';
 
 export const appConfig: ApplicationConfig = {
-  providers: [provideHttpClient(withFetch(), withInterceptorsFromDi()), provideZoneChangeDetection({ eventCoalescing: true }), provideRouter(routes), provideAuth(authConfig), { provide: HTTP_INTERCEPTORS, useClass: CookieInterceptor, multi: true }, { provide: HTTP_INTERCEPTORS, useClass: TenantInterceptor, multi: true }, { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }, provideAnimationsAsync()]
+  providers: [provideHttpClient(withFetch(), withInterceptorsFromDi()), provideZoneChangeDetection({ eventCoalescing: true }), provideRouter(routes), provideAuth(authConfig), { provide: HTTP_INTERCEPTORS, useClass: CookieInterceptor, multi: true }, { provide: HTTP_INTERCEPTORS, useClass: TenantInterceptor, multi: true }, { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }, { provide: HTTP_INTERCEPTORS, useClass: CustomAuthInterceptor, multi: true }, provideAnimationsAsync()]
 };

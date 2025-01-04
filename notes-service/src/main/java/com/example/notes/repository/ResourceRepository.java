@@ -1,5 +1,6 @@
 package com.example.notes.repository;
 
+import com.example.notes.resource.BaseResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -53,7 +54,7 @@ public class ResourceRepository {
             {@CacheEvict(value = RESOURCE_FIND_CACHE, key = RESOURCE_ID_CRUD_CACHE_KEY),
                     @CacheEvict(value = RESOURCE_FIND_CACHE, allEntries = true)})
     public <R> void delete(String id, Class<R> resourceClass) {
-        mongoTemplate.remove(Query.query(Criteria.where("id").is(id)), resourceClass);
+        mongoTemplate.remove(Query.query(Criteria.where(BaseResource.Fields.id).is(id)), resourceClass);
     }
 
 }

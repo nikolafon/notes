@@ -25,7 +25,6 @@ export class NotesComponent implements OnInit {
   private filter$ = new BehaviorSubject<any>({});
 
   ngOnInit() {
-    this.noteService.refreshNotes();
     this.filter$.pipe(debounceTime(500)).subscribe(() =>
       this.noteService.refreshNotes(this.searchTerm, this.page, this.size, this.sort.active + ',' + this.sort.direction));
   }

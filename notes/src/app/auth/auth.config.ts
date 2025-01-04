@@ -14,6 +14,6 @@ export const authConfig: PassedInitialConfig = {
               autoCleanStateAfterAuthentication: true,
               historyCleanupOff: false,
               disablePkce: false,
-              secureRoutes: ['http://localhost:8080'],
+              secureRoutes: ['http://localhost:8080/api'],
           }
 }
