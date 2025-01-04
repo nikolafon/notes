@@ -18,8 +18,4 @@ public class BaseTenantService {
         return query;
     }
 
-    protected void tenantExists(String tenantId) {
-        tenantService.find(String.format("{tenantId:'%s'}", tenantId)).stream().findFirst()
-                .orElseThrow(() -> new IllegalStateException("Tenant not found"));
-    }
 }

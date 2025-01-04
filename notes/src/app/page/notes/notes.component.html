@@ -6,7 +6,7 @@
         <a mat-button href="/note">New Note</a>
       </div>
       <div class="filter">
-        <mat-form-field>
+        <mat-form-field subscriptSizing="dynamic">
           <input #titleFilter type="text" required matInput placeholder="Filter by title"
             (keyup)="filter(titleFilter.value)" />
         </mat-form-field>
