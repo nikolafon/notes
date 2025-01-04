@@ -161,12 +161,13 @@ public class AuthorizationServerConfig {
                 .clientId("notes-webapp")
                 .clientAuthenticationMethod(ClientAuthenticationMethod.NONE)
                 .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
-                .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
                 .redirectUri(webappRedirectUri)
                 .postLogoutRedirectUri(webappRedirectUri)
                 .scope(OidcScopes
                         .PROFILE)
                 .scope(OidcScopes.OPENID)
+                .tokenSettings(
+                        TokenSettings.builder().accessTokenTimeToLive(Duration.ofHours(1)).build())
                 .clientSettings(ClientSettings.builder()
                         .requireAuthorizationConsent(false)
                         .requireProofKey(true).build())

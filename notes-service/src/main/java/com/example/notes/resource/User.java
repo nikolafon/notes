@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.FieldNameConstants;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -17,6 +18,7 @@ import java.util.Set;
 @FieldNameConstants
 @Data
 @Document(collection = "users")
+@CompoundIndex(def = "{'tenantId':1,'username':1}", unique = true)
 public class User extends BaseResource implements UserDetails {
     @Indexed
     private String tenantId;
@@ -31,7 +33,7 @@ public class User extends BaseResource implements UserDetails {
     private String email;
     @NotEmpty
     @Size(max = 20)
-    @Indexed(unique = true)
+    @Indexed
     private String username;
     @NotEmpty
     @Size(max = 50)

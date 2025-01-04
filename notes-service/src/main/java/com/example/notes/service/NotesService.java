@@ -29,7 +29,7 @@ public class NotesService extends BaseTenantService {
     private ResourceRepository resourceRepository;
 
     public Page<Note> find(String query, Pageable pageable) {
-        Query mongoQuery = createQueryWithAdditionalTenantFilter(query).with(pageable);
+        Query mongoQuery = createQueryWithAdditionalTenantFilter(query);
         addNoteFilter(mongoQuery);
         return resourceRepository.find(mongoQuery, pageable, Note.class);
     }

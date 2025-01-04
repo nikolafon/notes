@@ -25,7 +25,7 @@ public class TenantService {
     }
 
     public Page<Tenant> find(String query, Pageable pageable) {
-        return resourceRepository.find(new BasicQuery(query).with(pageable), pageable, Tenant.class);
+        return resourceRepository.find(new BasicQuery(query), pageable, Tenant.class);
     }
 
     public Tenant get(String id) {

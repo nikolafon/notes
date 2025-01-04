@@ -3,10 +3,10 @@
   <form [formGroup]="form" (ngSubmit)="submit()">
     <mat-card-content>
       <mat-form-field>
-        <input type="text" matInput placeholder="Username" formControlName="username">
+        <input required type="text" matInput placeholder="Username" formControlName="username">
       </mat-form-field>
       <mat-form-field>
-        <input type="password" matInput placeholder="Password" formControlName="password">
+        <input required type="password" matInput placeholder="Password" formControlName="password">
       </mat-form-field>
       <mat-form-field>
         <input type="text" matInput placeholder="Organization" formControlName="tenant">

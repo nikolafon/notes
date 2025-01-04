@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 import java.util.Set;
@@ -28,7 +27,7 @@ public class InitDb {
     private PasswordEncoder passwordEncoder;
 
     @PostConstruct
-    @Transactional
+    //@Transactional
     public void init() {
         Optional<User> optionalUser = userService.find(String.format("{username: '%s'}", SUPER_ADMIN)).stream().findFirst();
         if (optionalUser.isEmpty()) {
@@ -49,7 +48,7 @@ public class InitDb {
             tenant.setName("Default");
             tenantService.create(tenant);
         }
-        Optional<User> optionalTenantUser = userService.find(String.format("{username: '%s'}", ADMIN)).stream().findFirst();
+        Optional<User> optionalTenantUser = userService.find(String.format("{username: '%s', tenantId: '%s'}", ADMIN, defaultTenantId)).stream().findFirst();
         if (optionalTenantUser.isEmpty()) {
             User user = new User();
             user.setFirstName("Nikola");

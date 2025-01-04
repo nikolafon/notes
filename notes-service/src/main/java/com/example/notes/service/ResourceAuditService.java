@@ -21,7 +21,7 @@ public class ResourceAuditService extends BaseTenantService {
     private ResourceRepository resourceRepository;
 
     public Page<ResourceAudit> find(String query, Pageable pageable) {
-        Query mongoQuery = createQueryWithAdditionalTenantFilter(query).with(pageable);
+        Query mongoQuery = createQueryWithAdditionalTenantFilter(query);
         return resourceRepository.find(mongoQuery, pageable, ResourceAudit.class);
     }
 

@@ -9,18 +9,22 @@ export class NoteService {
     private httpClient: HttpClient = inject(HttpClient);
 
     notes = signal<Note[]>([]);
+    totalElements = signal<number>(0);
 
     private readonly NOTES_API = 'http://localhost:8080/api/notes';
     private snackBar = inject(MatSnackBar);
 
-    refreshNotes(query?: string) {
-        const q = query ? '?query=' + encodeURIComponent(`{
+    refreshNotes(query?: string, page: number = 0, size: number = 5, sort: string = 'title,asc') {
+        const q = `?page=${page}&size=${size}&sort=${sort}` + (query ? `&query=` + encodeURIComponent(`{
             $text: {
                 $search: '${query}',
                 $caseSensitive: false
             }
-            }`) : '';
-        return this.httpClient.get(this.NOTES_API +q).subscribe((notes: any) => this.notes.set(notes.content), (error) => this.snackBar.open(error.error.message, 'Dismiss', { duration: 3000 }));
+            }`) : '');
+        return this.httpClient.get(this.NOTES_API + q).subscribe((notes: any) => {
+            this.notes.set(notes.content);
+            this.totalElements.set(notes.page.totalElements);
+        }, (error) => this.snackBar.open(error.error.message, 'Dismiss', { duration: 3000 }));
     }
 
     getNote(id: string) {

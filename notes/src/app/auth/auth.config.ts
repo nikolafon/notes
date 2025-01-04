@@ -11,7 +11,8 @@ export const authConfig: PassedInitialConfig = {
               responseType: 'code',
               silentRenew: false,
               useRefreshToken: false,
-              renewTimeBeforeTokenExpiresInSeconds: 30,
+              autoCleanStateAfterAuthentication: true,
+              historyCleanupOff: false,
               disablePkce: false,
               secureRoutes: ['http://localhost:8080'],
           }

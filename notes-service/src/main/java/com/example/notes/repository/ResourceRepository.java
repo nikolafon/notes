@@ -27,9 +27,8 @@ public class ResourceRepository {
 
     @Cacheable(cacheNames = RESOURCE_FIND_CACHE)
     public <R> Page<R> find(Query query, Pageable pageable, Class<R> resourceClass) {
-        query.with(pageable);
         long total = mongoTemplate.count(query, resourceClass);
-        List<R> products = mongoTemplate.find(query, resourceClass);
+        List<R> products = mongoTemplate.find(query.with(pageable), resourceClass);
         return new PageImpl<>(products, pageable, total);
     }
 
