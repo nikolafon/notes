@@ -14,7 +14,13 @@ export class NoteService {
     private snackBar = inject(MatSnackBar);
 
     refreshNotes(query?: string) {
-        return this.httpClient.get(this.NOTES_API + (query ? '?query=' + encodeURIComponent('{title:{$regex:"' + query + '"}}') : '')).subscribe((notes: any) => this.notes.set(notes.content), (error) => this.snackBar.open(error.error.message, 'Dismiss', { duration: 3000 }));
+        const q = query ? '?query=' + encodeURIComponent(`{
+            $text: {
+                $search: '${query}',
+                $caseSensitive: false
+            }
+            }`) : '';
+        return this.httpClient.get(this.NOTES_API +q).subscribe((notes: any) => this.notes.set(notes.content), (error) => this.snackBar.open(error.error.message, 'Dismiss', { duration: 3000 }));
     }
 
     getNote(id: string) {

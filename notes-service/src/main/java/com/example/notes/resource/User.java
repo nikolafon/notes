@@ -18,7 +18,7 @@ import java.util.Set;
 @Data
 @Document(collection = "users")
 public class User extends BaseResource implements UserDetails {
-    @Indexed(unique = true)
+    @Indexed
     private String tenantId;
     @NotEmpty
     @Size(max = 50)
