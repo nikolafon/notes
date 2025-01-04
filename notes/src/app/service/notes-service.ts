@@ -13,8 +13,8 @@ export class NoteService {
     private readonly NOTES_API = 'http://localhost:8080/api/notes';
     private snackBar = inject(MatSnackBar);
 
-    refreshNotes() {
-        return this.httpClient.get(this.NOTES_API).subscribe((notes: any) => this.notes.set(notes.content), (error) => this.snackBar.open(error.error.message, 'Dismiss', { duration: 3000 }));
+    refreshNotes(query?: string) {
+        return this.httpClient.get(this.NOTES_API + (query ? '?query=' + encodeURIComponent('{title:{$regex:"' + query + '"}}') : '')).subscribe((notes: any) => this.notes.set(notes.content), (error) => this.snackBar.open(error.error.message, 'Dismiss', { duration: 3000 }));
     }
 
     getNote(id: string) {

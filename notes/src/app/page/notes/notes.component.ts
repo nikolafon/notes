@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, model, ModelSignal, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { MaterialModule } from '../../material.module';
 import { AuthService } from '../../service/auth-service';
 import { NoteService } from '../../service/notes-service';
@@ -20,6 +20,10 @@ export class NotesComponent implements OnInit {
 
   delete(id?: string) {
     this.noteService.delete(id);
+  }
+
+  filter(titleFilter: string) {
+    this.noteService.refreshNotes(titleFilter);
   }
 
 }

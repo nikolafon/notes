@@ -11,9 +11,19 @@ mat-card-title {
 
 mat-card-header {
     display: flex;
+    flex-direction: row;
     align-items: center;
     padding: 10px;
 }
+
+.new-note {
+    margin-right: auto;
+}
+
+.filter {
+    margin-left: auto;
+}
+
 .notes {
     margin: 10px;
 }

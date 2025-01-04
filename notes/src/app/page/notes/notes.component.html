@@ -1,7 +1,17 @@
 <div class="container">
   <mat-card>
     <mat-card-title>Notes</mat-card-title>
-    <mat-card-header><a mat-button href="/note">New Note</a></mat-card-header>
+    <mat-card-header>
+      <div class="new-note">
+        <a mat-button href="/note">New Note</a>
+      </div>
+      <div class="filter">
+        <mat-form-field>
+          <input #titleFilter type="text" required matInput placeholder="Filter by title"
+            (keyup)="filter(titleFilter.value)" />
+        </mat-form-field>
+      </div>
+    </mat-card-header>
     @if (notes().length > 0) {
     <div class="notes">
       <table mat-table [dataSource]="notes()" class="mat-elevation-z8">
