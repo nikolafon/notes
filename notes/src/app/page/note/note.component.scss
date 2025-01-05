@@ -32,3 +32,12 @@ mat-card-footer {
     justify-content: center;
     width: 100%;
 }
+.collaborator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.collaborator button {
+    margin-left: 10px;
+}

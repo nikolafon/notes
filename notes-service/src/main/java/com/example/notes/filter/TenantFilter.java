@@ -30,8 +30,6 @@ public class TenantFilter implements Filter {
         String tenantId = request.getHeader(TENANT_ID_PARAM_HEADER) != null ? request.getHeader(TENANT_ID_PARAM_HEADER) :
                 request.getParameter(TENANT_ID_PARAM);
         if (StringUtils.isNotBlank(tenantId)) {
-            Tenant tenantExample = new Tenant();
-            tenantExample.setTenantId(tenantId);
             tenantService.find(String.format("{tenantId: '%s'}", tenantId))
                     .stream().findFirst().orElseThrow(() -> new IllegalArgumentException("Invalid tenant"));
             TenantHolder.setCurrentTenantId(tenantId);

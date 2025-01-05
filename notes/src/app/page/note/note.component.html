@@ -1,22 +1,35 @@
 <div class="container">
-<mat-card>
+  <mat-card>
 
-  <mat-card-title>Note</mat-card-title>
+    <mat-card-title>Note</mat-card-title>
 
-  <form [formGroup]="form" (ngSubmit)="submit()">
-    <mat-card-content>
-      <mat-form-field>
-        <input type="text" required matInput placeholder="Title" formControlName="title"/>
-      </mat-form-field>
-      <mat-form-field>
-        <textarea rows="5" required matInput placeholder="Content" formControlName="content"></textarea>
-      </mat-form-field>
-    </mat-card-content>
-    <mat-card-footer>
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <mat-card-content>
+        <mat-form-field>
+          <input type="text" required matInput placeholder="Title" formControlName="title" />
+        </mat-form-field>
+        <mat-form-field>
+          <textarea rows="5" required matInput placeholder="Content" formControlName="content"></textarea>
+        </mat-form-field>
+        <div class="collaborator">
+          <mat-form-field subscriptSizing="dynamic">
+            <input type="text" #collaborator matInput placeholder="Collaborator" formControlName="collaborator" />
+          </mat-form-field> 
+          <button [disabled]="!collaborator.value" type="button" (click)="addCollaborator(collaborator.value)"
+            mat-button>Add</button>
+        </div>
+        <mat-list>
+          @for (username of note.collaborators; track username) {
+          <mat-list-item>{{ username }} <button type="button" (click)="removeCollaborator(username)"
+              mat-button>x</button></mat-list-item>
+          }
+        </mat-list>
+      </mat-card-content>
+      <mat-card-footer>
         <button [disabled]="!form.valid" type="submit" mat-button>Save</button>
         <button type="button" (click)="back()" mat-button>Back</button>
-    </mat-card-footer>
-  </form>
+      </mat-card-footer>
+    </form>
 
-</mat-card>
+  </mat-card>
 </div>

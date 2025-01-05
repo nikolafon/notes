@@ -4,7 +4,7 @@ import { MaterialModule } from '../../material.module';
 import { AuthService } from '../../service/auth-service';
 import { NoteService } from '../../service/notes-service';
 import { BehaviorSubject, debounceTime } from 'rxjs';
-import { MatSort, Sort } from '@angular/material/sort';
+import { Sort } from '@angular/material/sort';
 import { PageEvent } from '@angular/material/paginator';
 @Component({
   selector: 'notes',
@@ -25,7 +25,7 @@ export class NotesComponent implements OnInit {
   private filter$ = new BehaviorSubject<any>({});
 
   ngOnInit() {
-    this.filter$.pipe(debounceTime(500)).subscribe(() =>
+    this.filter$.pipe(debounceTime(300)).subscribe(() =>
       this.noteService.refreshNotes(this.searchTerm, this.page, this.size, this.sort.active + ',' + this.sort.direction));
   }
 

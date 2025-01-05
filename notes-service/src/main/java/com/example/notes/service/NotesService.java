@@ -14,8 +14,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.Set;
-
 @Service
 public class NotesService extends BaseTenantService {
 
@@ -27,6 +25,8 @@ public class NotesService extends BaseTenantService {
     private ObjectMapper objectMapper;
     @Autowired
     private ResourceRepository resourceRepository;
+    @Autowired
+    private UserService userService;
 
     public Page<Note> find(String query, Pageable pageable) {
         Query mongoQuery = createQueryWithAdditionalTenantFilter(query);
@@ -62,8 +62,9 @@ public class NotesService extends BaseTenantService {
         if (!oldState.getOwner().equals(note.getOwner())) {
             throw new IllegalStateException("Owner can't be changed");
         }
+        note.getCollaborators().forEach(username -> userService.getByUsername(username));
         note.setOwner(SecurityContextHolder.getContext().getAuthentication().getName());
-        note.setCollaborators(Set.of(note.getOwner()));
+
 //        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
 //            @Override
 //            public void afterCommit() {

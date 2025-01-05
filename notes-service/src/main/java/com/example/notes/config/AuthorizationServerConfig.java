@@ -39,7 +39,6 @@ import org.springframework.security.oauth2.server.authorization.settings.TokenSe
 import org.springframework.security.oauth2.server.authorization.token.JwtEncodingContext;
 import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenCustomizer;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
 
 import java.time.Duration;
 import java.util.Collections;
@@ -78,7 +77,6 @@ public class AuthorizationServerConfig {
             throws Exception {
         http
                 .securityMatcher("/login/**", "/logout/**", "/login/oauth2/**", "/default-ui.css", "/oauth2/authorization/**")
-                .addFilterBefore(tenantFilter, AbstractPreAuthenticatedProcessingFilter.class)
                 .formLogin(formLogin -> {
                             formLogin
                                     .successHandler((request, response, authentication) -> response.setStatus(HttpStatus.SC_OK));
@@ -112,7 +110,7 @@ public class AuthorizationServerConfig {
             throws Exception {
         OAuth2AuthorizationServerConfigurer authorizationServerConfigurer =
                 OAuth2AuthorizationServerConfigurer.authorizationServer();
-        http.addFilterAfter(corsFilter, AbstractPreAuthenticatedProcessingFilter.class).
+        http.
                 securityMatcher(authorizationServerConfigurer.getEndpointsMatcher())
                 .with(authorizationServerConfigurer, (authorizationServer) -> {
                             authorizationServer
@@ -143,6 +141,7 @@ public class AuthorizationServerConfig {
                 User user = new User();
                 user.setUsername(username);
                 user.setEmail(email);
+                user.setTenantId(tenant);
                 user.setFirstName(firstName);
                 user.setLastName(lastName);
                 user.setPassword(passwordEncoder.encode(UUID.randomUUID().toString()));

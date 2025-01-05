@@ -2,6 +2,7 @@ import { HttpClient } from "@angular/common/http";
 import { inject, Injectable, signal } from "@angular/core";
 import { Note } from "../resource/note";
 import { MatSnackBar } from "@angular/material/snack-bar";
+import { catchError } from "rxjs";
 
 @Injectable({ providedIn: 'root' })
 export class NoteService {
@@ -21,23 +22,27 @@ export class NoteService {
                 $caseSensitive: false
             }
             }`) : '');
-        return this.httpClient.get(this.NOTES_API + q).subscribe((notes: any) => {
-            this.notes.set(notes.content);
-            this.totalElements.set(notes.page.totalElements);
-        }, (error) => this.snackBar.open(error.error.message, 'Dismiss', { duration: 3000 }));
+        return this.httpClient.get(this.NOTES_API + q).pipe(
+            catchError((error) => { this.snackBar.open(error.error.message, 'Dismiss', { duration: 3000 }); throw error; })).subscribe((notes: any) => {
+                this.notes.set(notes.content);
+                this.totalElements.set(notes.page.totalElements);
+            });
     }
 
     getNote(id: string) {
         return this.httpClient.get<Note>(this.NOTES_API + '/' + id);
     }
     createOrUpdateNote(note: Note) {
-        note.id ? this.httpClient.put(this.NOTES_API + '/' + note.id, note).subscribe(() => this.refreshNotes()) :
-            this.httpClient.post(this.NOTES_API, note).subscribe(() => this.refreshNotes(), (error) => this.snackBar.open(error.error.message, 'Dismiss', { duration: 3000 }));
+        note.id ? this.httpClient.put(this.NOTES_API + '/' + note.id, note).pipe(
+            catchError((error) => { this.snackBar.open(error.error.message, 'Dismiss', { duration: 3000 }); throw error; })).subscribe(() => this.refreshNotes()) :
+            this.httpClient.post(this.NOTES_API, note).pipe(
+                catchError((error) => { this.snackBar.open(error.error.message, 'Dismiss', { duration: 3000 }); throw error; })).subscribe(() => this.refreshNotes());
     }
 
     delete(id?: string) {
         if (id) {
-            this.httpClient.delete(this.NOTES_API + '/' + id).subscribe(() => this.refreshNotes(), (error) => this.snackBar.open(error.error.message, 'Dismiss', { duration: 3000 }));
+            this.httpClient.delete(this.NOTES_API + '/' + id).pipe(
+                catchError((error) => { this.snackBar.open(error.error.message, 'Dismiss', { duration: 3000 }); throw error; })).subscribe(() => this.refreshNotes());
         }
     }
 

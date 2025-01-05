@@ -37,6 +37,13 @@ public class UserService extends BaseTenantService {
                 .orElseThrow(() -> new IllegalStateException("User not found"));
     }
 
+    public User getByUsername(String username) {
+        Query mongoQuery = createQueryWithAdditionalTenantFilter(String.format("{username : '%s'}", username));
+        return resourceRepository.find(mongoQuery, User.class).stream()
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("User not found"));
+    }
+
     //@Transactional
     public User create(User user) {
         return resourceRepository.create(user);
