@@ -1,0 +1,24 @@
+<mat-card>
+  <mat-card-title>Login</mat-card-title>
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <mat-card-content>
+      <mat-form-field>
+        <input required type="text" matInput placeholder="Username" formControlName="username">
+      </mat-form-field>
+      <mat-form-field>
+        <input required type="password" matInput placeholder="Password" formControlName="password">
+      </mat-form-field>
+      <mat-form-field>
+        <input type="text" matInput placeholder="Organization" formControlName="tenant">
+      </mat-form-field>
+    </mat-card-content>
+    <mat-card-footer>
+      <div class="button">
+        <button [disabled]="!form.valid" type="submit" mat-button>Login</button>
+      </div>
+    </mat-card-footer>
+  </form>
+  <div class="social">
+    <img (click)="githubLogin()" title="Login with GitHub" src="/github.svg" />
+  </div>
+</mat-card>

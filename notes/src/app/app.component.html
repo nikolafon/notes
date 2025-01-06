@@ -1,0 +1,6 @@
+@if (authService.isAuthenticated() | async) {
+<div class="logout">Hello {{(authService.userInfo() | async)?.sub}}
+    <button mat-button (click)="authService.logout()">Logout</button>
+</div>
+}
+<router-outlet />

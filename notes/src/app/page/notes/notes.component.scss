@@ -1,0 +1,46 @@
+mat-card {
+    width:calc(60%);
+}
+
+mat-card-title {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+}
+
+
+mat-card-header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 10px;
+}
+
+.new-note {
+    margin-right: auto;
+}
+
+.filter {
+    margin-left: auto;
+}
+
+.notes {
+    margin: 10px;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+.no-notes {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    font-size: 20px;
+    color: #9e9e9e;
+}

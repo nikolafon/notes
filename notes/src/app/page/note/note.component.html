@@ -1,0 +1,32 @@
+<div class="container">
+  <mat-card>
+
+    <mat-card-title>Note</mat-card-title>
+
+      <mat-card-content>
+        <mat-form-field>
+          <input #title type="text" [value]="note.title" matInput placeholder="Title" (keyup)="titleChange(title.value)" />
+        </mat-form-field>
+        <mat-form-field>
+          <textarea #content rows="5" [value]="note.content" matInput placeholder="Content" (keyup)="contentChange(content.value)"></textarea>
+        </mat-form-field>
+        <div class="collaborator">
+          <mat-form-field subscriptSizing="dynamic">
+            <input type="text" #collaborator matInput placeholder="Collaborator" />
+          </mat-form-field> 
+          <button [disabled]="!collaborator.value" type="button" (click)="addCollaborator(collaborator.value)"
+            mat-button>Add</button>
+        </div>
+        <mat-list>
+          @for (username of note.collaborators; track username) {
+          <mat-list-item>{{ username }} <button type="button" (click)="removeCollaborator(username)"
+              mat-button>x</button></mat-list-item>
+          }
+        </mat-list>
+      </mat-card-content>
+      <mat-card-footer>
+        <button type="button" (click)="back()" mat-button>Back</button>
+      </mat-card-footer>
+
+  </mat-card>
+</div>
