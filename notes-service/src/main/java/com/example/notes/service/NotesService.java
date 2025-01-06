@@ -14,6 +14,9 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+/**
+ * Service for managing notes.
+ */
 @Service
 public class NotesService extends BaseTenantService {
 
@@ -30,13 +33,25 @@ public class NotesService extends BaseTenantService {
     @Autowired
     private ResourceAuditEventService resourceAuditEventService;
 
-
+    /**
+     * Finds notes.
+     *
+     * @param query    query
+     * @param pageable pageable
+     * @return notes
+     */
     public Page<Note> find(String query, Pageable pageable) {
         Query mongoQuery = createQueryWithAdditionalTenantFilter(query);
         addNoteFilter(mongoQuery);
         return resourceRepository.find(mongoQuery, pageable, Note.class);
     }
 
+    /**
+     * Gets a note by id.
+     *
+     * @param id id
+     * @return note
+     */
     public Note get(String id) {
         Query mongoQuery = createQueryWithAdditionalTenantFilter(String.format("{id : '%s'}", id));
         addNoteFilter(mongoQuery);
@@ -45,6 +60,12 @@ public class NotesService extends BaseTenantService {
                 .orElseThrow(() -> new IllegalStateException("Note not found"));
     }
 
+    /**
+     * Creates a note.
+     *
+     * @param note note
+     * @return created note
+     */
     //@Transactional
     public Note create(Note note) {
         note.setOwner(SecurityContextHolder.getContext().getAuthentication().getName());
@@ -53,6 +74,12 @@ public class NotesService extends BaseTenantService {
         return resourceRepository.create(note);
     }
 
+    /**
+     * Updates a note.
+     *
+     * @param note note
+     * @return updated note
+     */
     //@Transactional
     public Note update(Note note) {
         Note oldState = get(note.getId());

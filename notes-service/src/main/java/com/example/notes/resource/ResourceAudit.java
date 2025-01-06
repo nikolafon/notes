@@ -10,6 +10,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.io.Serializable;
 import java.time.ZonedDateTime;
 
+/**
+ * Represents an audit record for a resource.
+ */
 @Data
 @Document(collection = "resource_audits")
 @FieldNameConstants

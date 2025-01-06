@@ -22,6 +22,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
+/**
+ * Service for managing event streams for notes.
+ */
 @Service
 @Slf4j
 public class NotesEventStreamService {
@@ -60,7 +63,12 @@ public class NotesEventStreamService {
     public void destroy() throws Exception {
         redisMessageListenerContainer.destroy();
     }
-
+    /**
+     * Register an event stream for a note.
+     *
+     * @param noteId the id of the note
+     * @return the event stream
+     */
     public SseEmitter registerEventStream(String noteId) {
         Note note = notesService.get(noteId);
         if (!note.getCollaborators().contains(SecurityContextHolder.getContext().getAuthentication().getName()) &&
@@ -71,7 +79,11 @@ public class NotesEventStreamService {
         registeredSseEmitters.computeIfAbsent(noteId, k -> new ArrayList<>()).add(sseEmitter);
         return sseEmitter;
     }
-
+    /**
+     * Send an update to all event streams for a note.
+     *
+     * @param note the note to send
+     */
     public void sendNoteUpdate(Note note) {
         List<SseEmitter> sseEmitters = registeredSseEmitters.get(note.getId());
         if (sseEmitters != null) {

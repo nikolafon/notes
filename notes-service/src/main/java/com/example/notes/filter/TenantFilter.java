@@ -1,7 +1,5 @@
 package com.example.notes.filter;
 
-import com.example.notes.repository.ResourceRepository;
-import com.example.notes.resource.Tenant;
 import com.example.notes.service.TenantService;
 import com.example.notes.tenant.TenantHolder;
 import jakarta.servlet.*;
@@ -9,11 +7,13 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.query.BasicQuery;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
+/**
+ * Tenant filter.
+ */
 @Component
 public class TenantFilter implements Filter {
 

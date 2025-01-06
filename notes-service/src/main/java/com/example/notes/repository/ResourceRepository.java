@@ -16,6 +16,9 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+/**
+ * Generic resource repository.
+ */
 @Repository
 public class ResourceRepository {
 

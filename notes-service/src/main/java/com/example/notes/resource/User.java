@@ -14,6 +14,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Set;
 
+/**
+ * User resource.
+ */
 @EqualsAndHashCode(callSuper = true)
 @FieldNameConstants
 @Data

@@ -1,7 +1,8 @@
 package com.example.notes.tenant;
 
-import com.example.notes.resource.Tenant;
-
+/**
+ * A simple holder for the current tenant of a request.
+ */
 public class TenantHolder {
 
     private final static ThreadLocal<String> currentTenant = new ThreadLocal<>();

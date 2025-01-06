@@ -5,6 +5,9 @@ import org.springframework.core.convert.converter.Converter;
 import java.time.ZonedDateTime;
 import java.util.Date;
 
+/**
+ * Converts a {@link ZonedDateTime} to a {@link Date}.
+ */
 public class ZonedDateTimeWriteConverter implements Converter<ZonedDateTime, Date> {
     @Override
     public Date convert(ZonedDateTime zonedDateTime) {

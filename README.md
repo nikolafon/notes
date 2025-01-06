@@ -25,3 +25,4 @@ login with the following credentials:
     password: admin
     organization: default
 ```
+You can also login using GitHub login but make sure to enter the correct organization name.

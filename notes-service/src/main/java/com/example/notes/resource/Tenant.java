@@ -10,6 +10,9 @@ import lombok.experimental.FieldNameConstants;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+/**
+ * Tenant resource.
+ */
 @EqualsAndHashCode(callSuper = true)
 @FieldNameConstants
 @Data

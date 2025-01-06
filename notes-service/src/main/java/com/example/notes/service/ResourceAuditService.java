@@ -10,6 +10,9 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
+/**
+ * Service for managing resource audits.
+ */
 @Service
 public class ResourceAuditService extends BaseTenantService {
 
@@ -20,11 +23,24 @@ public class ResourceAuditService extends BaseTenantService {
     @Autowired
     private ResourceRepository resourceRepository;
 
+    /**
+     * Finds resource audits.
+     *
+     * @param query    query
+     * @param pageable pageable
+     * @return resource audits
+     */
     public Page<ResourceAudit> find(String query, Pageable pageable) {
         Query mongoQuery = createQueryWithAdditionalTenantFilter(query);
         return resourceRepository.find(mongoQuery, pageable, ResourceAudit.class);
     }
 
+    /**
+     * Gets a resource audit by id.
+     *
+     * @param id id
+     * @return resource audit
+     */
     public ResourceAudit get(String id) {
         Query mongoQuery = createQueryWithAdditionalTenantFilter(String.format("{id : '%s'}", id));
         return resourceRepository.find(mongoQuery, ResourceAudit.class).stream()

@@ -20,6 +20,11 @@ public class ResourceAuditEventService {
     @Autowired
     private ResourceRepository resourceRepository;
 
+    /**
+     * Handles before create event.
+     *
+     * @param entity entity
+     */
     public void handleBeforeCreate(BaseResource entity) {
         validateAuthentication();
         ZonedDateTime now = ZonedDateTime.now(ZoneId.of("UTC"));
@@ -34,7 +39,11 @@ public class ResourceAuditEventService {
         resourceAudit.setNewState(entity);
         resourceRepository.create(resourceAudit);
     }
-
+    /**
+     * Handles before update event.
+     *
+     * @param entity entity
+     */
     public void handleBeforeUpdate(BaseResource entity) {
         validateAuthentication();
         ZonedDateTime now = ZonedDateTime.now(ZoneId.of("UTC"));
@@ -51,7 +60,11 @@ public class ResourceAuditEventService {
         resourceAudit.setNewState(entity);
         resourceRepository.create(resourceAudit);
     }
-
+    /**
+     * Handles before delete event.
+     *
+     * @param entity entity
+     */
     public void handleBeforeDelete(BaseResource entity) {
         validateAuthentication();
         ZonedDateTime now = ZonedDateTime.now(ZoneId.of("UTC"));

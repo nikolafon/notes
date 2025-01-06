@@ -12,6 +12,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Represents a note.
+ */
 @EqualsAndHashCode(callSuper = true)
 @FieldNameConstants
 @Data

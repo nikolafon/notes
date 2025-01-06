@@ -9,6 +9,9 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+/**
+ * Cors filter.
+ */
 @Component
 public class CorsFilter extends OncePerRequestFilter {
 

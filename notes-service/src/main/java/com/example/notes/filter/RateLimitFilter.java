@@ -18,6 +18,9 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
+/**
+ * Rate limit filter.
+ */
 @Component
 public class RateLimitFilter implements Filter {
 

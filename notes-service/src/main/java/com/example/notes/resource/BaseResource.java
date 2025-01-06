@@ -9,6 +9,9 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import java.io.Serializable;
 import java.time.ZonedDateTime;
 
+/**
+ * Base class for all resources.
+ */
 @Data
 @FieldNameConstants
 public abstract class BaseResource implements Serializable {

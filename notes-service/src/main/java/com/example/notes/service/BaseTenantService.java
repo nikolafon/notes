@@ -6,6 +6,9 @@ import org.springframework.data.mongodb.core.query.BasicQuery;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 
+/**
+ * Base tenant service.
+ */
 public class BaseTenantService {
 
     @Autowired
