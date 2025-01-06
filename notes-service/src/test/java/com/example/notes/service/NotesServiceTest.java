@@ -40,7 +40,8 @@ public class NotesServiceTest {
     private ResourceRepository resourceRepository;
     @InjectMocks
     private NotesService notesService;
-
+    @Mock
+    private ResourceAuditEventService resourceAuditEventService;
     @BeforeEach
     void setUp() {
         SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
