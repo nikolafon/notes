@@ -8,7 +8,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.query.BasicQuery;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -19,6 +18,8 @@ public class TenantService {
     private ObjectMapper objectMapper;
     @Autowired
     private ResourceRepository resourceRepository;
+    @Autowired
+    private ResourceAuditEventService resourceAuditEventService;
 
     public List<Tenant> find(String query) {
         return resourceRepository.find(new BasicQuery(query), Tenant.class);
@@ -36,18 +37,22 @@ public class TenantService {
 
     //@Transactional
     public Tenant create(Tenant note) {
+        resourceAuditEventService.handleBeforeCreate(note);
         return resourceRepository.create(note);
     }
 
     //@Transactional
     public Tenant update(Tenant note) {
         get(note.getId());
+        resourceAuditEventService.handleBeforeUpdate(note);
         return resourceRepository.update(note);
     }
 
     //@Transactional
     public void delete(String id) {
-        resourceRepository.delete(get(id).getId(), Tenant.class);
+        Tenant tenant = get(id);
+        resourceAuditEventService.handleBeforeDelete(tenant);
+        resourceRepository.delete(tenant.getId(), Tenant.class);
     }
 
 }

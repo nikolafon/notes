@@ -51,7 +51,7 @@ public class ResourceRepository {
     }
 
     @Caching(evict =
-            {@CacheEvict(value = RESOURCE_FIND_CACHE, key = RESOURCE_ID_CRUD_CACHE_KEY),
+            {@CacheEvict(value = RESOURCE_CRUD_CACHE, key = RESOURCE_ID_CRUD_CACHE_KEY),
                     @CacheEvict(value = RESOURCE_FIND_CACHE, allEntries = true)})
     public <R> void delete(String id, Class<R> resourceClass) {
         mongoTemplate.remove(Query.query(Criteria.where(BaseResource.Fields.id).is(id)), resourceClass);

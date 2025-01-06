@@ -3,17 +3,16 @@
 
     <mat-card-title>Note</mat-card-title>
 
-    <form [formGroup]="form" (ngSubmit)="submit()">
       <mat-card-content>
         <mat-form-field>
-          <input type="text" required matInput placeholder="Title" formControlName="title" />
+          <input #title type="text" [value]="note.title" matInput placeholder="Title" (keyup)="titleChange(title.value)" />
         </mat-form-field>
         <mat-form-field>
-          <textarea rows="5" required matInput placeholder="Content" formControlName="content"></textarea>
+          <textarea #content rows="5" [value]="note.content" matInput placeholder="Content" (keyup)="contentChange(content.value)"></textarea>
         </mat-form-field>
         <div class="collaborator">
           <mat-form-field subscriptSizing="dynamic">
-            <input type="text" #collaborator matInput placeholder="Collaborator" formControlName="collaborator" />
+            <input type="text" #collaborator matInput placeholder="Collaborator" />
           </mat-form-field> 
           <button [disabled]="!collaborator.value" type="button" (click)="addCollaborator(collaborator.value)"
             mat-button>Add</button>
@@ -26,10 +25,8 @@
         </mat-list>
       </mat-card-content>
       <mat-card-footer>
-        <button [disabled]="!form.valid" type="submit" mat-button>Save</button>
         <button type="button" (click)="back()" mat-button>Back</button>
       </mat-card-footer>
-    </form>
 
   </mat-card>
 </div>

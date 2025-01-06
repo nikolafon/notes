@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit, ViewChild } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { MaterialModule } from '../../material.module';
 import { AuthService } from '../../service/auth-service';
 import { NoteService } from '../../service/notes-service';
-import { BehaviorSubject, debounceTime } from 'rxjs';
+import { BehaviorSubject, debounceTime, Subject } from 'rxjs';
 import { Sort } from '@angular/material/sort';
 import { PageEvent } from '@angular/material/paginator';
 @Component({

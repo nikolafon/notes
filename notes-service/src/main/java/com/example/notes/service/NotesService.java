@@ -27,6 +27,9 @@ public class NotesService extends BaseTenantService {
     private ResourceRepository resourceRepository;
     @Autowired
     private UserService userService;
+    @Autowired
+    private ResourceAuditEventService resourceAuditEventService;
+
 
     public Page<Note> find(String query, Pageable pageable) {
         Query mongoQuery = createQueryWithAdditionalTenantFilter(query);
@@ -46,6 +49,7 @@ public class NotesService extends BaseTenantService {
     public Note create(Note note) {
         note.setOwner(SecurityContextHolder.getContext().getAuthentication().getName());
         note.setTenantId(TenantHolder.getCurrentTenantId());
+        resourceAuditEventService.handleBeforeCreate(note);
         return resourceRepository.create(note);
     }
 
@@ -72,11 +76,13 @@ public class NotesService extends BaseTenantService {
 //            }
 //        });
         redisTemplate.convertAndSend("notes", note);
+        resourceAuditEventService.handleBeforeUpdate(note);
         return resourceRepository.update(note);
     }
 
     //@Transactional
     public void delete(String id) {
+        resourceAuditEventService.handleBeforeDelete(get(id));
         resourceRepository.delete(get(id).getId(), Note.class);
     }
 

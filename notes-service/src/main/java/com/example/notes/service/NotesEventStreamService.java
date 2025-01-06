@@ -4,6 +4,7 @@ import com.example.notes.resource.Note;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -22,6 +23,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 @Service
+@Slf4j
 public class NotesEventStreamService {
 
     @Autowired
@@ -41,7 +43,6 @@ public class NotesEventStreamService {
     public void init() {
         redisMessageListenerContainer = new RedisMessageListenerContainer();
         redisMessageListenerContainer.setConnectionFactory(connectionFactory);
-        redisMessageListenerContainer.setTaskExecutor(executor);
         redisMessageListenerContainer.addMessageListener((message, pattern) ->
                 {
                     try {
@@ -62,7 +63,7 @@ public class NotesEventStreamService {
 
     public SseEmitter registerEventStream(String noteId) {
         Note note = notesService.get(noteId);
-        if (!note.getCollaborators().contains(SecurityContextHolder.getContext().getAuthentication().getName()) ||
+        if (!note.getCollaborators().contains(SecurityContextHolder.getContext().getAuthentication().getName()) &&
                 !note.getOwner().equals(SecurityContextHolder.getContext().getAuthentication().getName())) {
             throw new IllegalArgumentException("You are not an owner or collaborator on this note");
         }
@@ -75,24 +76,36 @@ public class NotesEventStreamService {
         List<SseEmitter> sseEmitters = registeredSseEmitters.get(note.getId());
         if (sseEmitters != null) {
             sseEmitters.forEach(eventStream -> {
-                try {
-                    eventStream.send(note);
-                } catch (Exception e) {
-                    eventStream.completeWithError(e);
-                }
+                executor.execute(() -> {
+                    try {
+                        eventStream.send(note);
+                    } catch (IOException ignored) {
+
+                    }
+                });
             });
         }
     }
 
     private SseEmitter createSseEmitter(String noteId) {
         SseEmitter sseEmitter = new SseEmitter();
-        sseEmitter.onError((t) -> {
-            registeredSseEmitters.get(noteId).remove(sseEmitter);
-            if (registeredSseEmitters.get(noteId).isEmpty()) {
-                registeredSseEmitters.remove(noteId);
-            }
-        });
+        sseEmitter.onError((error) ->
+                cleanupStreams(noteId, sseEmitter)
+        );
+        sseEmitter.onCompletion(() ->
+                cleanupStreams(noteId, sseEmitter)
+        );
+        sseEmitter.onTimeout(() ->
+                cleanupStreams(noteId, sseEmitter)
+        );
         return sseEmitter;
+    }
+
+    private void cleanupStreams(String noteId, SseEmitter sseEmitter) {
+        registeredSseEmitters.get(noteId).remove(sseEmitter);
+        if (registeredSseEmitters.get(noteId).isEmpty()) {
+            registeredSseEmitters.remove(noteId);
+        }
     }
 
 }

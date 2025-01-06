@@ -25,6 +25,10 @@ export class AuthService {
         }
     }
 
+    getAccessToken(): Observable<string> {
+        return this.oidcSecurityService.getAccessToken();
+    }
+
     isAuthenticated(): Observable<boolean> {
         return this.oidcSecurityService.isAuthenticated$.pipe(map(({ isAuthenticated }) => isAuthenticated));
     }

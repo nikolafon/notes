@@ -18,3 +18,10 @@
     npm install
     npm start
 ```
+3. Open the browser and go to http://localhost:4200/
+login with the following credentials:
+```text
+    username: admin
+    password: admin
+    organization: default
+```

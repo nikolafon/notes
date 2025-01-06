@@ -1,12 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnInit, ViewChild } from '@angular/core';
 import { MaterialModule } from '../../material.module';
 import { NoteService } from '../../service/notes-service';
-import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Note } from '../../resource/note';
 import { UserService } from '../../service/user-service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { BehaviorSubject, debounceTime, Subject } from 'rxjs';
 @Component({
   selector: 'notes',
   imports: [MaterialModule, ReactiveFormsModule, CommonModule],
@@ -21,12 +22,8 @@ export class NoteComponent implements OnInit {
   private activatedRoute: ActivatedRoute = inject(ActivatedRoute);
   private snackBar = inject(MatSnackBar);
   note: Note = { id: undefined, title: '', content: '', collaborators: [] };
-
-  form: FormGroup = new FormGroup({
-    title: new FormControl(this.note.title),
-    content: new FormControl(this.note.content),
-    collaborator: new FormControl('')
-  });
+  private save$ = new Subject<any>();
+  private changeDetectorRef = inject(ChangeDetectorRef);
 
   ngOnInit() {
     this.activatedRoute.params.subscribe(params => {
@@ -34,8 +31,19 @@ export class NoteComponent implements OnInit {
       if (id) {
         this.noteService.getNote(id).subscribe(note => {
           this.note = note;
-          this.form.setValue({ title: note.title, content: note.content, collaborator: '' });
+          this.changeDetectorRef.detectChanges();
         });
+        this.noteService.eventStream(id).subscribe(note => {
+          if (note) {
+            this.note = note;
+            this.changeDetectorRef.detectChanges();
+          }
+        });
+      }
+    });
+    this.save$.pipe(debounceTime(300)).subscribe(() => {
+      if (this.note.title?.trim()) {
+        this.noteService.createOrUpdateNote(this.note);
       }
     });
   }
@@ -44,7 +52,7 @@ export class NoteComponent implements OnInit {
     this.userService.getUserByUsername(username).subscribe(response => {
       if (response.page.totalElements > 0) {
         this.note.collaborators.push(username);
-        this.form.get('collaborator')?.setValue('');
+        this.save$.next({});
       } else {
         this.snackBar.open('User not found', 'Dismiss', { duration: 3000 });
       }
@@ -53,13 +61,16 @@ export class NoteComponent implements OnInit {
 
   removeCollaborator(username: string) {
     this.note.collaborators = this.note.collaborators.filter(collaborator => collaborator !== username);
+    this.save$.next({});
   }
 
-  submit() {
-    if (this.form.valid) {
-      this.noteService.createOrUpdateNote({ ... this.note, ... this.form.value });
-      this.router.navigate(['/notes']);
-    };
+  titleChange(value: string) {
+    this.note.title = value;
+    this.save$.next({});
+  }
+  contentChange(value: string) {
+    this.note.content = value;
+    this.save$.next({});
   }
 
   back() {

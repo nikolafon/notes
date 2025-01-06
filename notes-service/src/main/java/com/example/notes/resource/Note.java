@@ -23,7 +23,6 @@ public class Note extends BaseResource {
     @Size(max = 100)
     @TextIndexed
     private String title;
-    @NotEmpty
     @Size(max = 4000)
     @TextIndexed
     private String content;
